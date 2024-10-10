@@ -14,10 +14,13 @@
 
 <div id="options" style="display:none; text-align: center; margin-top: 20px;">
     <h2>Selecciona una opción:</h2>
-    <form method="get" asp-page="/Pages/Create_game">
+    <!--Para cuando se tenga una url buena, se podra la siguiente linea
+        <form method="get" asp-page="Login_Twitch">
+    -->
+    <form method="get" asp-page="Create_game">
         <button type="submit" style="font-size: 20px; padding: 10px 20px;">Crear una partida</button>
     </form>
-    <form method="get" asp-page="/Pages/JoinGame">
+    <form method="get" asp-page="JoinGame">
         <button type="submit" style="font-size: 20px; padding: 10px 20px;">Unirse a una partida</button>
     </form>
 </div>
