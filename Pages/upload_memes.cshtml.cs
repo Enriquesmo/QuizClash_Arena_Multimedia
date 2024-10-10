@@ -22,9 +22,19 @@ namespace QuizClash_Arena_Multimedia.Pages
         {
             if (Files != null && Files.Count > 0)
             {
+                // Definir el directorio donde se guardarán los archivos
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+                // Crear la carpeta "uploads" si no existe
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
                 foreach (var file in Files)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", file.FileName);
+                    var filePath = Path.Combine(uploadPath, file.FileName);
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);

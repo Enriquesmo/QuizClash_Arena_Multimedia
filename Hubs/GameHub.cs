@@ -12,6 +12,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
         private static TwitchClient twitchClient;
         private static Dictionary<string, List<string>> playerMemes = new Dictionary<string, List<string>>();
         private static Dictionary<string, int> playerScores = new Dictionary<string, int>();
+        private static Dictionary<string, int> voteCount = new Dictionary<string, int>(); // Diccionario para contar los votos
         private static int currentRound = 0;
 
         public GameHub()
@@ -41,7 +42,19 @@ namespace QuizClash_Arena_Multimedia.Hubs
             if (message.StartsWith("!voto "))
             {
                 string vote = message.Split(' ')[1];
-                Clients.All.SendAsync("ReceiveVote", vote);
+
+                // Registrar el voto en el diccionario
+                if (voteCount.ContainsKey(vote))
+                {
+                    voteCount[vote]++;
+                }
+                else
+                {
+                    voteCount[vote] = 1;
+                }
+
+                // Enviar el voto a todos los clientes conectados mediante SignalR
+                Clients.All.SendAsync("ReceiveVote", vote, voteCount[vote]);
             }
         }
 
@@ -49,6 +62,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
         {
             currentRound = 1;
             playerScores.Clear();
+            voteCount.Clear(); // Limpiar los votos al iniciar un nuevo juego
             await Clients.All.SendAsync("GameStarted", numPlayers);
         }
 
@@ -69,29 +83,55 @@ namespace QuizClash_Arena_Multimedia.Hubs
 
         public async Task StartVoting()
         {
+            voteCount.Clear(); // Limpiar los votos al iniciar una nueva ronda de votación
             await Clients.All.SendAsync("VotingStarted", currentRound);
         }
 
-        public async Task VoteResult(string winningAnswer)
+        public async Task VoteResult()
         {
-            if (playerScores.ContainsKey(winningAnswer))
-            {
-                playerScores[winningAnswer]++;
-            }
-            else
-            {
-                playerScores[winningAnswer] = 1;
-            }
+            string winningAnswer = GetWinningAnswer();
 
-            if (playerScores[winningAnswer] >= 3)
+            if (!string.IsNullOrEmpty(winningAnswer))
             {
-                await Clients.All.SendAsync("GameEnded", winningAnswer);
+                if (playerScores.ContainsKey(winningAnswer))
+                {
+                    playerScores[winningAnswer]++;
+                }
+                else
+                {
+                    playerScores[winningAnswer] = 1;
+                }
+
+                if (playerScores[winningAnswer] >= 3)
+                {
+                    await Clients.All.SendAsync("GameEnded", winningAnswer);
+                }
+                else
+                {
+                    currentRound++;
+                    await Clients.All.SendAsync("NewRoundStarted", currentRound);
+                }
             }
             else
             {
-                currentRound++;
-                await Clients.All.SendAsync("NewRoundStarted", currentRound);
+                await Clients.All.SendAsync("NoVotesReceived", "No hubo votos en esta ronda");
             }
+        }
+
+        private string GetWinningAnswer()
+        {
+            // Encuentra la respuesta con la mayor cantidad de votos
+            int maxVotes = 0;
+            string winningAnswer = null;
+            foreach (var vote in voteCount)
+            {
+                if (vote.Value > maxVotes)
+                {
+                    maxVotes = vote.Value;
+                    winningAnswer = vote.Key;
+                }
+            }
+            return winningAnswer;
         }
     }
 }

@@ -1,4 +1,7 @@
 using QuizClash_Arena_Multimedia.Hubs;
+using QuizClash_Arena_Multimedia.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,12 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();  // Agregar SignalR
 
+// Configuración de autenticación para Twitch
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "Cookies";
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = "Twitch";
 })
-.AddCookie("Cookies")
+.AddCookie()
 .AddTwitch(options =>
 {
     options.ClientId = builder.Configuration["Twitch:ClientId"];
@@ -19,9 +23,12 @@ builder.Services.AddAuthentication(options =>
     options.CallbackPath = new PathString("/auth/twitch/callback");
 });
 
+// Registrar el servicio para el bot de Twitch antes de construir la aplicación
+builder.Services.AddSingleton<TwitchBotService>();
+
+// Construir la aplicación
 var app = builder.Build();
 
-// Configurar el pipeline de solicitudes HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -30,14 +37,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-
 app.MapRazorPages();
+
+// Inicializar el servicio del bot de Twitch después de construir la aplicación
+var twitchBot = app.Services.GetRequiredService<TwitchBotService>();
+twitchBot.Connect();
 
 // Configurar el Hub de SignalR
 app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
