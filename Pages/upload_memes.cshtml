@@ -1,0 +1,15 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.upload_memesModel
+@{
+    ViewData["Title"] = "Subir Imágenes o Videos";
+}
+
+<h1 style="text-align: center;">Sube tus Imágenes o Videos</h1>
+
+<div style="text-align: center;">
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="numPlayers" value="@Model.NumPlayers" /> <!-- Campo oculto para el número de jugadores -->
+        <input type="file" name="files" accept="image/*, video/*" multiple required /><br /><br />
+        <button type="submit">Subir</button>
+    </form>
+</div>

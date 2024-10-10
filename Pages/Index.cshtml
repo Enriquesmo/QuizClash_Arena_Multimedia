@@ -1,0 +1,29 @@
+﻿
+@page
+@model QuizClash_Arena_Multimedia.Pages.IndexModel
+@{
+    ViewData["Title"] = "QuizClash_Arena";
+}
+
+<h1 style="text-align: center;">JUEGO</h1>
+<p style="text-align: center;">Bienvenido al juego de memes. ¡Diviértete creando y compartiendo!</p>
+
+<div style="text-align: center;">
+    <button id="playButton" style="font-size: 24px; padding: 15px 30px;">A JUGAR</button>
+</div>
+
+<div id="options" style="display:none; text-align: center; margin-top: 20px;">
+    <h2>Selecciona una opción:</h2>
+    <form method="get" asp-page="Create_game">
+        <button type="submit" style="font-size: 20px; padding: 10px 20px;">Crear una partida</button>
+    </form>
+    <form method="get" asp-page="JoinGame">
+        <button type="submit" style="font-size: 20px; padding: 10px 20px;">Unirse a una partida</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("playButton").addEventListener("click", function () {
+        document.getElementById("options").style.display = "block";
+    });
+</script>

@@ -1,0 +1,23 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.Create_gameModel
+@{
+    ViewData["Title"] = "Crear Partida";
+}
+
+<h1 style="text-align: center;">Crear Partida</h1>
+
+<div style="text-align: center;">
+    <h2>Selecciona el número de jugadores:</h2>
+    <form asp-page="upload_memes" method="post">
+        <select name="numPlayers" required>
+            <option value="">Seleccionar</option>
+            <option value="2">2 Jugadores</option>
+            <option value="3">3 Jugadores</option>
+            <option value="4">4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+        </select>
+        <br /><br />
+        <button type="submit" style="font-size: 20px; padding: 10px 20px;">Continuar</button>
+    </form>
+</div>
