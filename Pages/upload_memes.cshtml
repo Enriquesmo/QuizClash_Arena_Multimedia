@@ -13,3 +13,24 @@
         <button type="submit">Subir</button>
     </form>
 </div>
+
+<div id="uploadedMemes" style="text-align: center; margin-top: 20px;">
+    <h2>Memes subidos:</h2>
+    <ul id="memeList"></ul>
+</div>
+
+<script src="~/lib/signalr/signalr.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    connection.on("MemeUploaded", function (playerName, memeUrl) {
+        const memeList = document.getElementById("memeList");
+        const listItem = document.createElement("li");
+        listItem.textContent = `Jugador: ${playerName}, Meme: ${memeUrl}`;
+        memeList.appendChild(listItem);
+    });
+</script>

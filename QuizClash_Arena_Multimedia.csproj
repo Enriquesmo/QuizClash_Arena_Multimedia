@@ -9,6 +9,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="8.0.10" />
+    <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Memes_predeterminados\" />
   </ItemGroup>
 
 </Project>

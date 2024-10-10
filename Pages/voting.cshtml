@@ -1,0 +1,37 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.VotingModel
+@{
+    ViewData["Title"] = "Votación de Respuestas";
+}
+
+<h1 style="text-align: center;">Votación de Respuestas</h1>
+
+<div id="votingSection" style="text-align: center;">
+    <h2>¡Vota por tu respuesta favorita!</h2>
+    <ul id="answerList"></ul>
+</div>
+
+<script src="~/lib/signalr/signalr.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    connection.on("AnswerSubmitted", function (playerName, answer) {
+        const answerList = document.getElementById("answerList");
+        const listItem = document.createElement("li");
+        listItem.textContent = `Jugador: ${playerName}, Respuesta: ${answer}`;
+        answerList.appendChild(listItem);
+    });
+
+    connection.on("VotingStarted", function (roundNumber) {
+        alert(`Comienza la votación para la ronda ${roundNumber}!`);
+    });
+
+    connection.on("GameEnded", function (winner) {
+        alert(`¡El juego ha terminado! Ganador: ${winner}`);
+        window.location.href = "/Index";
+    });
+</script>
