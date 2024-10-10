@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.FileProviders;
 using QuizClash_Arena_Multimedia.Hubs;
 using QuizClash_Arena_Multimedia.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,11 +37,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(); // Asegúrate de que esto está habilitado
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+
+// Servir archivos de la carpeta "avatars"
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "images/avatars")),
+    RequestPath = "/images/avatars"
+});
 
 // Inicializar el servicio del bot de Twitch después de construir la aplicación
 var twitchBot = app.Services.GetRequiredService<TwitchBotService>();

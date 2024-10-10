@@ -1,0 +1,15 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.JoinGameModel
+@{
+    ViewData["Title"] = "Unirse a una Partida";
+}
+
+<h1 style="text-align: center;">Unirse a una Partida</h1>
+
+<div style="text-align: center;">
+    <form method="post">
+        <label for="roomCode">Código de la Sala:</label>
+        <input type="text" id="roomCode" name="roomCode" required />
+        <button type="submit">Unirse</button>
+    </form>
+</div>

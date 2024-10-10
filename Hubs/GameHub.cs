@@ -14,6 +14,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
         private static Dictionary<string, int> playerScores = new Dictionary<string, int>();
         private static Dictionary<string, int> voteCount = new Dictionary<string, int>(); // Diccionario para contar los votos
         private static int currentRound = 0;
+        private static Dictionary<string, List<string>> gameRooms = new Dictionary<string, List<string>>(); // Diccionario para almacenar jugadores por sala
 
         public GameHub()
         {
@@ -38,7 +39,6 @@ namespace QuizClash_Arena_Multimedia.Hubs
             string message = e.ChatMessage.Message.ToLower();
 
             // Procesar el mensaje como voto
-            // Asumiremos que los votos son mensajes tipo "!voto 1", "!voto 2", etc.
             if (message.StartsWith("!voto "))
             {
                 string vote = message.Split(' ')[1];
@@ -133,5 +133,28 @@ namespace QuizClash_Arena_Multimedia.Hubs
             }
             return winningAnswer;
         }
+
+        // Método para unirse a la sala usando el código de la sala
+        public async Task JoinRoom(string roomCode)
+        {
+            // Generar un nombre y avatar aleatorio para el jugador
+            string playerName = $"Jugador_{new Random().Next(1000, 9999)}"; // Ejemplo de nombre aleatorio
+            string playerAvatar = $"/images/avatars/avatar_{new Random().Next(1, 9)}.png"; // Supongamos que tenemos 8 avatares disponibles en la carpeta avatars
+
+            if (!gameRooms.ContainsKey(roomCode))
+            {
+                gameRooms[roomCode] = new List<string>();
+            }
+
+            // Agregar el jugador con su nombre y avatar a la sala
+            gameRooms[roomCode].Add(playerName);
+
+            // Notificar a todos los jugadores en la sala de espera que un nuevo jugador se ha unido
+            await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+        }
+
+
     }
 }

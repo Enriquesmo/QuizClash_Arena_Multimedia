@@ -1,0 +1,41 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.WaitingRoomModel
+@{
+    ViewData["Title"] = "Sala de Espera";
+}
+
+<h1 style="text-align: center;">Sala de Espera</h1>
+<p style="text-align: center;">Código de la Sala: <strong>@Model.RoomCode</strong></p>
+
+<h2 style="text-align: center;">Jugadores en la partida:</h2>
+<ul id="playerList" style="text-align: center;">
+</ul>
+
+<div style="text-align: center;">
+    <button id="startGameButton" style="font-size: 20px; padding: 10px 20px;" disabled>Iniciar Juego</button>
+</div>
+
+<script>
+    const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+    const roomCode = "@Model.RoomCode";
+
+    connection.start().then(function () {
+        console.log("Conectado al hub de SignalR");
+        connection.invoke("JoinRoom", roomCode);
+    });
+
+    connection.on("PlayerJoined", function (playerName, playerAvatar) {
+        const playerList = document.getElementById("playerList");
+        const listItem = document.createElement("li");
+
+        // Crear una imagen del avatar
+        const avatarImg = document.createElement("img");
+        avatarImg.src = playerAvatar; // Usa la URL del avatar
+        avatarImg.style.width = "50px"; // Ajusta el tamaño según lo que necesites
+        avatarImg.style.height = "50px"; // Ajusta el tamaño según lo que necesites
+
+        listItem.appendChild(avatarImg); // Añadir la imagen al elemento de la lista
+        listItem.appendChild(document.createTextNode(` ${playerName}`)); // Añadir el nombre del jugador
+        playerList.appendChild(listItem);
+    });
+</script>
