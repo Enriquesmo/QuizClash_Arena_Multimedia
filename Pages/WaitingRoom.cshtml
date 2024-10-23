@@ -4,12 +4,16 @@
     ViewData["Title"] = "Sala de Espera";
 }
 
+<!-- Incluir jQuery antes de SignalR -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script> <!-- Asegúrate de que esta referencia sea correcta -->
+
+
 <h1 style="text-align: center;">Sala de Espera</h1>
 <p style="text-align: center;">Código de la Sala: <strong>@Model.RoomCode</strong></p>
 
 <h2 style="text-align: center;">Jugadores en la partida:</h2>
-<ul id="playerList" style="text-align: center;">
-</ul>
+<ul id="playerList" style="text-align: center;"></ul>
 
 <div style="text-align: center;">
     <button id="startGameButton" style="font-size: 20px; padding: 10px 20px;" disabled>Iniciar Juego</button>
@@ -21,10 +25,16 @@
 
     connection.start().then(function () {
         console.log("Conectado al hub de SignalR");
-        connection.invoke("JoinRoom", roomCode);
+        return connection.invoke("JoinRoom", roomCode);
+    }).then(() => {
+        console.log(`Unido a la sala: ${roomCode}`);
+    }).catch(function (err) {
+        console.error(err.toString());
     });
 
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
+        console.log(`Nuevo jugador añadido: ${playerName}`);
+
         const playerList = document.getElementById("playerList");
         const listItem = document.createElement("li");
 
@@ -36,6 +46,7 @@
 
         listItem.appendChild(avatarImg); // Añadir la imagen al elemento de la lista
         listItem.appendChild(document.createTextNode(` ${playerName}`)); // Añadir el nombre del jugador
-        playerList.appendChild(listItem);
+        playerList.appendChild(listItem); // Añadir el elemento a la lista
     });
 </script>
+

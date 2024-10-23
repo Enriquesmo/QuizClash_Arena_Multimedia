@@ -8,9 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="8.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Azure.SignalR.Protocols" Version="1.28.0" />
     <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
   </ItemGroup>
 

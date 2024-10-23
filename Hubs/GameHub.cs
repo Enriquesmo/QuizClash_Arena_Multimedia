@@ -138,22 +138,24 @@ namespace QuizClash_Arena_Multimedia.Hubs
         public async Task JoinRoom(string roomCode)
         {
             // Generar un nombre y avatar aleatorio para el jugador
-            string playerName = $"Jugador_{new Random().Next(1000, 9999)}"; // Ejemplo de nombre aleatorio
-            string playerAvatar = $"/images/avatars/avatar_{new Random().Next(1, 9)}.png"; // Supongamos que tenemos 8 avatares disponibles en la carpeta avatars
+            string playerName = $"Jugador_{new Random().Next(1000, 9999)}"; // nombre aleatorio
+            string playerAvatar = $"/images/avatars/avatar_{new Random().Next(1, 9)}.png"; // 9 avatares disponibles
 
             if (!gameRooms.ContainsKey(roomCode))
             {
                 gameRooms[roomCode] = new List<string>();
             }
 
-            // Agregar el jugador con su nombre y avatar a la sala
+            // Agregar al jugador al grupo
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+
+            // Agregar el jugador a la lista de la sala
             gameRooms[roomCode].Add(playerName);
 
             // Notificar a todos los jugadores en la sala de espera que un nuevo jugador se ha unido
             await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
         }
+
 
 
     }
