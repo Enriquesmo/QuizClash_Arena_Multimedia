@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using TwitchLib.Client.Events;
+using System.Collections.Concurrent;
 
 namespace QuizClash_Arena_Multimedia.Hubs
 {
@@ -135,28 +136,37 @@ namespace QuizClash_Arena_Multimedia.Hubs
         }
 
         // Método para unirse a la sala usando el código de la sala
-        public async Task JoinRoom(string roomCode)
+        private static readonly ConcurrentDictionary<string, List<Player>> Rooms = new ConcurrentDictionary<string, List<Player>>();
+
+        public async Task JoinRoom(string roomCode, string playerName, string playerAvatar)
         {
-            // Generar un nombre y avatar aleatorio para el jugador
-            string playerName = $"Jugador_{new Random().Next(1000, 9999)}"; // nombre aleatorio
-            string playerAvatar = $"/images/avatars/avatar_{new Random().Next(1, 9)}.png"; // 9 avatares disponibles
-
-            if (!gameRooms.ContainsKey(roomCode))
+            // Añadir el jugador a la sala
+            var player = new Player { Name = playerName, AvatarUrl = playerAvatar };
+            Rooms.AddOrUpdate(roomCode, new List<Player> { player }, (key, existingList) =>
             {
-                gameRooms[roomCode] = new List<string>();
-            }
+                existingList.Add(player);
+                return existingList;
+            });
 
-            // Agregar al jugador al grupo
             await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
-
-            // Agregar el jugador a la lista de la sala
-            gameRooms[roomCode].Add(playerName);
-
-            // Notificar a todos los jugadores en la sala de espera que un nuevo jugador se ha unido
             await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
         }
 
-
-
+        public Task<List<Player>> GetPlayersInRoom(string roomCode)
+        {
+            // Obtener la lista de jugadores en la sala
+            Rooms.TryGetValue(roomCode, out var players);
+            return Task.FromResult(players ?? new List<Player>());
+        }
     }
+
+    public class Player
+    {
+        public string Name { get; set; }
+        public string AvatarUrl { get; set; }
+    }
+
+
+
 }
+

@@ -5,14 +5,22 @@ namespace QuizClash_Arena_Multimedia.Pages
 {
     public class JoinGameModel : PageModel
     {
+        [BindProperty]
         public string RoomCode { get; set; }
+        [BindProperty]
+        public string PlayerName { get; set; }
+        [BindProperty]
+        public string PlayerAvatar { get; set; }
 
-        public IActionResult OnPost()
+        public IActionResult OnPostJoinGame()
         {
-            RoomCode = Request.Form["roomCode"];
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-            // Redirigir a la página de espera con el código de sala
-            return RedirectToPage("WaitingRoom", new { roomCode = RoomCode });
+            // Redirigir a la sala de espera con los datos necesarios
+            return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
         }
     }
 }

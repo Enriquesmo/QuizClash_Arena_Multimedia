@@ -7,9 +7,39 @@
 <h1 style="text-align: center;">Unirse a una Partida</h1>
 
 <div style="text-align: center;">
-    <form method="post">
+    <form method="post" asp-page-handler="JoinGame">
         <label for="roomCode">Código de la Sala:</label>
         <input type="text" id="roomCode" name="roomCode" required />
-        <button type="submit">Unirse</button>
+        <br /><br />
+        <label for="playerName">Nombre del Jugador:</label>
+        <input type="text" id="playerName" name="playerName" placeholder="Introduce tu nombre" required>
+        <br /><br />
+        <label for="playerAvatar">Avatar del Jugador:</label>
+        <select id="playerAvatar" name="playerAvatar" required>
+            <option value="/images/avatars/avatar_1.png">Avatar 1</option>
+            <option value="/images/avatars/avatar_2.png">Avatar 2</option>
+            <option value="/images/avatars/avatar_3.png">Avatar 3</option>
+            <option value="/images/avatars/avatar_4.png">Avatar 4</option>
+            <option value="/images/avatars/avatar_5.png">Avatar 5</option>
+            <option value="/images/avatars/avatar_6.png">Avatar 6</option>
+            <option value="/images/avatars/avatar_7.png">Avatar 7</option>
+            <option value="/images/avatars/avatar_8.png">Avatar 8</option>
+        </select>
+        <br /><br />
+        <div id="avatarPreview" style="margin-top: 10px;">
+            <img id="avatarImage" src="" alt="Vista previa del avatar" style="display: none; width: 100px; height: 100px;" />
+        </div>
+        <br /><br />
+        <button type="submit" style="font-size: 20px; padding: 10px 20px;">Unirse</button>
     </form>
 </div>
+
+<script>
+    // Mostrar vista previa del avatar seleccionado
+    document.getElementById('playerAvatar').addEventListener('change', function (event) {
+        const selectedAvatar = event.target.value;
+        const avatarImage = document.getElementById('avatarImage');
+        avatarImage.src = selectedAvatar;
+        avatarImage.style.display = 'block';
+    });
+</script>

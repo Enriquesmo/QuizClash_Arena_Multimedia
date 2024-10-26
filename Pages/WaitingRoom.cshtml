@@ -8,7 +8,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script> <!-- Asegúrate de que esta referencia sea correcta -->
 
-
 <h1 style="text-align: center;">Sala de Espera</h1>
 <p style="text-align: center;">Código de la Sala: <strong>@Model.RoomCode</strong></p>
 
@@ -22,18 +21,49 @@
 <script>
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
     const roomCode = "@Model.RoomCode";
+    const playerName = "@Model.PlayerName";
+    const playerAvatar = "@Model.PlayerAvatar";
+    const playerSet = new Set(); // Conjunto para almacenar los nombres de los jugadores
 
     connection.start().then(function () {
         console.log("Conectado al hub de SignalR");
-        return connection.invoke("JoinRoom", roomCode);
+        if (playerName && playerAvatar) {
+            return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
+        }
     }).then(() => {
-        console.log(`Unido a la sala: ${roomCode}`);
+        if (playerName && playerAvatar) {
+            console.log(`Unido a la sala: ${roomCode} como ${playerName}`);
+            return connection.invoke("GetPlayersInRoom", roomCode);
+        }
+    }).then(players => {
+        if (players) {
+            players.forEach(player => {
+                if (!playerSet.has(player.name)) {
+                    addPlayerToList(player.name, player.avatarUrl);
+                }
+            });
+        }
     }).catch(function (err) {
         console.error(err.toString());
     });
 
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
+        if (playerSet.has(playerName)) {
+            console.log(`Jugador ${playerName} ya está en la lista, no se añadirá de nuevo.`);
+            return; // Si el jugador ya está en el conjunto, no lo añadimos de nuevo
+        }
+
+        addPlayerToList(playerName, playerAvatar);
+    });
+
+    function addPlayerToList(playerName, playerAvatar) {
+        if (!playerName || !playerAvatar) {
+            console.log("Nombre o avatar del jugador no definidos, no se añadirá a la lista.");
+            return; // No añadir si el nombre o avatar no están definidos
+        }
+
         console.log(`Nuevo jugador añadido: ${playerName}`);
+        playerSet.add(playerName); // Añadir el nombre del jugador al conjunto
 
         const playerList = document.getElementById("playerList");
         const listItem = document.createElement("li");
@@ -47,6 +77,5 @@
         listItem.appendChild(avatarImg); // Añadir la imagen al elemento de la lista
         listItem.appendChild(document.createTextNode(` ${playerName}`)); // Añadir el nombre del jugador
         playerList.appendChild(listItem); // Añadir el elemento a la lista
-    });
+    }
 </script>
-
