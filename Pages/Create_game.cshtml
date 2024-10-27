@@ -42,7 +42,10 @@
 </div>
 
 <script>
-    // Mostrar vista previa del avatar seleccionado
+    /**
+     * Muestra la vista previa del avatar seleccionado.
+     * Se ejecuta cuando el usuario selecciona un avatar del menú desplegable.
+     */
     document.getElementById('playerAvatar').addEventListener('change', function (event) {
         const selectedAvatar = event.target.value;
         const avatarImage = document.getElementById('avatarImage');
@@ -50,3 +53,5 @@
         avatarImage.style.display = 'block';
     });
 </script>
+
+

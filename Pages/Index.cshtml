@@ -1,5 +1,4 @@
-﻿
-@page
+﻿@page
 @model QuizClash_Arena_Multimedia.Pages.IndexModel
 @{
     ViewData["Title"] = "QuizClash_Arena";
@@ -26,7 +25,14 @@
 </div>
 
 <script>
+    /**
+     * Muestra las opciones de juego cuando se hace clic en el botón "A JUGAR".
+     * Se ejecuta cuando el usuario hace clic en el botón "A JUGAR".
+     */
     document.getElementById("playButton").addEventListener("click", function () {
         document.getElementById("options").style.display = "block";
     });
 </script>
+
+
+

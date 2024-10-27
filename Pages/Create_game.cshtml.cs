@@ -12,23 +12,29 @@ namespace QuizClash_Arena_Multimedia.Pages
         [BindProperty]
         public string PlayerAvatar { get; set; }
 
+        /**
+         * Maneja la solicitud POST para crear un nuevo juego.
+         * Valida el estado del modelo, genera un código de sala aleatorio y redirige a la sala de espera.
+         */
         public IActionResult OnPostCreateGame()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
-            // Generar un código de sala aleatorio
             string roomCode = GenerateRoomCode();
-
-            // Redirigir a la sala de espera con los datos necesarios
             return RedirectToPage("WaitingRoom", new { roomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
         }
 
+        /**
+         * Genera un código de sala aleatorio de 6 dígitos.
+         * @return Un string que representa el código de la sala.
+         */
         private string GenerateRoomCode()
         {
-            return "ROOM_" + new Random().Next(1000, 9999);
+            return "" + new Random().Next(100000, 999999);
         }
     }
 }
+
+

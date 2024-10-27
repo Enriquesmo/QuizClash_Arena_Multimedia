@@ -12,6 +12,7 @@
 <p style="text-align: center;">Código de la Sala: <strong>@Model.RoomCode</strong></p>
 
 <h2 style="text-align: center;">Jugadores en la partida:</h2>
+<p style="text-align: center;">Jugadores: <strong id="playerCount">0 / 0</strong></p>
 <ul id="playerList" style="text-align: center;"></ul>
 
 <div style="text-align: center;">
@@ -19,14 +20,23 @@
 </div>
 
 <script>
+    /**
+     * Configura la conexión con el hub de SignalR y maneja la lógica de unión a la sala.
+     */
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
     const roomCode = "@Model.RoomCode";
     const playerName = "@Model.PlayerName";
     const playerAvatar = "@Model.PlayerAvatar";
     const playerSet = new Set(); // Conjunto para almacenar los nombres de los jugadores
 
+    let maxPlayers = 0;
+
     connection.start().then(function () {
         console.log("Conectado al hub de SignalR");
+        return connection.invoke("GetMaxPlayers", roomCode);
+    }).then(max => {
+        maxPlayers = max;
+        document.getElementById("playerCount").innerText = `0 / ${maxPlayers}`;
         if (playerName && playerAvatar) {
             return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
         }
@@ -47,6 +57,9 @@
         console.error(err.toString());
     });
 
+    /**
+     * Maneja el evento cuando un nuevo jugador se une a la sala.
+     */
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
         if (playerSet.has(playerName)) {
             console.log(`Jugador ${playerName} ya está en la lista, no se añadirá de nuevo.`);
@@ -56,6 +69,9 @@
         addPlayerToList(playerName, playerAvatar);
     });
 
+    /**
+     * Añade un jugador a la lista de jugadores en la interfaz.
+     */
     function addPlayerToList(playerName, playerAvatar) {
         if (!playerName || !playerAvatar) {
             console.log("Nombre o avatar del jugador no definidos, no se añadirá a la lista.");
@@ -70,12 +86,15 @@
 
         // Crear una imagen del avatar
         const avatarImg = document.createElement("img");
-        avatarImg.src = playerAvatar; // Usa la URL del avatar
-        avatarImg.style.width = "50px"; // Ajusta el tamaño según lo que necesites
-        avatarImg.style.height = "50px"; // Ajusta el tamaño según lo que necesites
+        avatarImg.src = playerAvatar;
+        avatarImg.style.width = "50px";
+        avatarImg.style.height = "50px";
 
-        listItem.appendChild(avatarImg); // Añadir la imagen al elemento de la lista
-        listItem.appendChild(document.createTextNode(` ${playerName}`)); // Añadir el nombre del jugador
-        playerList.appendChild(listItem); // Añadir el elemento a la lista
+        listItem.appendChild(avatarImg);
+        listItem.appendChild(document.createTextNode(` ${playerName}`));
+        playerList.appendChild(listItem);
+
+        // Actualizar el contador de jugadores
+        document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
     }
 </script>

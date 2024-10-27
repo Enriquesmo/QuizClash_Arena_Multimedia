@@ -12,15 +12,18 @@ namespace QuizClash_Arena_Multimedia.Pages
         [BindProperty]
         public string PlayerAvatar { get; set; }
 
+        /**
+         * Maneja la solicitud POST para unirse a un juego.
+         * Valida el estado del modelo y redirige a la sala de espera con los datos necesarios.
+         */
         public IActionResult OnPostJoinGame()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
-            // Redirigir a la sala de espera con los datos necesarios
             return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
         }
     }
 }
+
