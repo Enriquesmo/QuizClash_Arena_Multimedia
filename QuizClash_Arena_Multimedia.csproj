@@ -22,4 +22,8 @@
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\fondo.jpg" />
+  </ItemGroup>
+
 </Project>
