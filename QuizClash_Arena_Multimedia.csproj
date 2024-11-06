@@ -18,12 +18,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\Memes\" />
+    <Folder Include="wwwroot\images\Memes\" />
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\fondo.jpg" />
+    <None Include="wwwroot\images\avatars\avatar_1.png" />
+    <None Include="wwwroot\images\avatars\avatar_2.png" />
+    <None Include="wwwroot\images\avatars\avatar_3.png" />
+    <None Include="wwwroot\images\avatars\avatar_4.png" />
+    <None Include="wwwroot\images\avatars\avatar_5.png" />
+    <None Include="wwwroot\images\avatars\avatar_6.png" />
+    <None Include="wwwroot\images\avatars\avatar_7.png" />
+    <None Include="wwwroot\images\avatars\avatar_8.png" />
+    <None Include="wwwroot\images\avatars\avatar_9.png" />
+    <None Include="wwwroot\images\fondo.jpg" />
+    <None Include="wwwroot\images\ImagenOriginalAvatars.jpg" />
+    <None Include="wwwroot\images\reposteria_Ana.png" />
   </ItemGroup>
 
 </Project>

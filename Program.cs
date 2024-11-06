@@ -48,12 +48,12 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 // Servir archivos de la carpeta "avatars"
-app.UseStaticFiles(new StaticFileOptions
-{
+//app.UseStaticFiles(new StaticFileOptions
+//{
     // Configurar el proveedor de archivos físicos para la carpeta "avatars"
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "images/avatars")),
-    RequestPath = "/images/avatars"
-});
+//    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "images")),
+//    RequestPath = "/images"
+//});
 
 // Inicializar el servicio del bot de Twitch después de construir la aplicación
 var twitchBot = app.Services.GetRequiredService<TwitchBotService>();
