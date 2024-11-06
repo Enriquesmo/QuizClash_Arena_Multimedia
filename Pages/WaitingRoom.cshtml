@@ -19,6 +19,9 @@
     <button id="startGameButton" style="font-size: 20px; padding: 10px 20px;" disabled>Iniciar Juego</button>
 </div>
 
+<h2 style="text-align: center;">Detalles de las Salas:</h2>
+<ul id="roomDetails" style="text-align: center;"></ul>
+
 <script>
     /**
      * Configura la conexión con el hub de SignalR y maneja la lógica de unión a la sala.
@@ -28,7 +31,6 @@
     const playerName = "@Model.PlayerName";
     const playerAvatar = "@Model.PlayerAvatar";
     const playerSet = new Set(); // Conjunto para almacenar los nombres de los jugadores
-
     let maxPlayers = 0;
 
     connection.start().then(function () {
@@ -52,6 +54,20 @@
                     addPlayerToList(player.name, player.avatarUrl);
                 }
             });
+        }
+    }).catch(function (err) {
+        console.error(err.toString());
+    });
+
+    /**
+     * Llama al método GetAllRooms y muestra los detalles de las salas.
+     */
+    connection.invoke("GetAllRooms").then(rooms => {
+        const roomDetails = document.getElementById("roomDetails");
+        for (const [roomCode, playerLimit] of Object.entries(rooms)) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `Sala: ${roomCode}, Límite de Jugadores: ${playerLimit}`;
+            roomDetails.appendChild(listItem);
         }
     }).catch(function (err) {
         console.error(err.toString());

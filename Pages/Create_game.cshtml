@@ -9,7 +9,7 @@
 <div style="text-align: center;">
     <h2>Selecciona el número de jugadores:</h2>
     <form method="post" asp-page-handler="CreateGame">
-        <select name="numPlayers" required>
+        <select name="NumPlayers" asp-for="NumPlayers" required>
             <option value="">Seleccionar</option>
             <option value="2">2 Jugadores</option>
             <option value="3">3 Jugadores</option>
@@ -19,10 +19,10 @@
         </select>
         <br /><br />
         <label for="playerName">Nombre del Jugador:</label>
-        <input type="text" id="playerName" name="playerName" placeholder="Introduce tu nombre" required>
+        <input type="text" id="playerName" name="PlayerName" asp-for="PlayerName" placeholder="Introduce tu nombre" required>
         <br /><br />
         <label for="playerAvatar">Avatar del Jugador:</label>
-        <select id="playerAvatar" name="playerAvatar" required>
+        <select id="playerAvatar" name="PlayerAvatar" asp-for="PlayerAvatar" required>
             <option value="/images/avatars/avatar_1.png">Avatar 1</option>
             <option value="/images/avatars/avatar_2.png">Avatar 2</option>
             <option value="/images/avatars/avatar_3.png">Avatar 3</option>
@@ -53,5 +53,3 @@
         avatarImage.style.display = 'block';
     });
 </script>
-
-

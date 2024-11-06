@@ -79,6 +79,16 @@ namespace QuizClash_Arena_Multimedia.Hubs
         // Métodos de gestión de salas
         // ====================================================================
         /**
+         * Crea una nueva sala y la guarda en el diccionario de salas.
+         */
+        public async Task CreateRoom(string roomCode, int playerLimit)
+        {
+            var room = new Room(roomCode, playerLimit);
+            Rooms[roomCode] = room;
+            await Clients.All.SendAsync("RoomCreated", roomCode, playerLimit);
+        }
+
+        /**
          * Añade un jugador a una sala y notifica a los jugadores de la sala
          */
         public async Task JoinRoom(string roomCode, string playerName, string playerAvatar)
@@ -113,6 +123,21 @@ namespace QuizClash_Arena_Multimedia.Hubs
                 return Task.FromResult(room.PlayerLimit);
             }
             return Task.FromResult(0);
+        }
+
+        /**
+         * Obtiene todas las salas con su límite de jugadores.
+         */
+        public async Task<Dictionary<string, int>> GetAllRooms()
+        {
+            var roomDetails = new Dictionary<string, int>();
+
+            foreach (var room in Rooms)
+            {
+                roomDetails.Add(room.Key, room.Value.PlayerLimit);
+            }
+
+            return await Task.FromResult(roomDetails);
         }
 
         // ====================================================================

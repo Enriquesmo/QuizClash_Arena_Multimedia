@@ -57,7 +57,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 // Inicializar el servicio del bot de Twitch después de construir la aplicación
 var twitchBot = app.Services.GetRequiredService<TwitchBotService>();
-twitchBot.Connect();
+//twitchBot.Connect();
 
 // Configurar el Hub de SignalR
 app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
