@@ -23,7 +23,7 @@ builder.Services.AddAuthentication(options =>
     // Configurar la autenticación de Twitch con ClientId y ClientSecret
     options.ClientId = builder.Configuration["Twitch:ClientId"];
     options.ClientSecret = builder.Configuration["Twitch:ClientSecret"];
-    options.CallbackPath = new PathString("/auth/twitch/callback");
+    options.CallbackPath = new PathString("/auth/callback");
 });
 
 // Registrar el servicio para el bot de Twitch antes de construir la aplicación
@@ -57,7 +57,7 @@ app.MapRazorPages();
 
 // Inicializar el servicio del bot de Twitch después de construir la aplicación
 var twitchBot = app.Services.GetRequiredService<TwitchBotService>();
-//twitchBot.Connect();
+twitchBot.Connect();
 
 // Configurar el Hub de SignalR
 app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
