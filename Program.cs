@@ -3,6 +3,11 @@ using Microsoft.Extensions.FileProviders;
 using QuizClash_Arena_Multimedia.Hubs;
 using QuizClash_Arena_Multimedia.Services;
 using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,25 +47,55 @@ if (!app.Environment.IsDevelopment())
 // Configurar middleware para redirección HTTPS y servir archivos estáticos
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // Asegúrate de que esto está habilitado
+
+// Configurar la carpeta "uploads" como una carpeta de archivos estáticos
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
+    RequestPath = "/uploads"
+});
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 
-// Servir archivos de la carpeta "avatars"
-//app.UseStaticFiles(new StaticFileOptions
-//{
-    // Configurar el proveedor de archivos físicos para la carpeta "avatars"
-//    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "images")),
-//    RequestPath = "/images"
-//});
-
 // Inicializar el servicio del bot de Twitch después de construir la aplicación
 var twitchBot = app.Services.GetRequiredService<TwitchBotService>();
-//twitchBot.Connect();
+// twitchBot.Connect();
 
 // Configurar el Hub de SignalR
 app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
+
+// Configurar limpieza automática de la carpeta "uploads" al detener la aplicación
+var hostApplicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+
+hostApplicationLifetime.ApplicationStopping.Register(() =>
+{
+    var uploadPath = Path.Combine(app.Environment.WebRootPath, "uploads");
+
+    if (Directory.Exists(uploadPath))
+    {
+        foreach (var file in Directory.GetFiles(uploadPath))
+        {
+            try
+            {
+                File.Delete(file); // Eliminar cada archivo en la carpeta
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar el archivo {file}: {ex.Message}");
+            }
+        }
+    }
+});
+
+// Crear la carpeta "uploads" si no existe al iniciar la aplicación
+var uploadDirectory = Path.Combine(app.Environment.WebRootPath, "uploads");
+if (!Directory.Exists(uploadDirectory))
+{
+    Directory.CreateDirectory(uploadDirectory);
+}
 
 // Ejecutar la aplicación
 app.Run();

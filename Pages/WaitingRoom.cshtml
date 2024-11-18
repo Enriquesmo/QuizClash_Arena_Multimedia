@@ -16,7 +16,9 @@
 <ul id="playerList" style="text-align: center;"></ul>
 
 <div style="text-align: center;">
-    <button id="startGameButton" style="font-size: 20px; padding: 10px 20px;" disabled>Iniciar Juego</button>
+    <form method="get" asp-page="upload_memes">
+        <button type="submit">iniciar Juego</button>
+    </form>
 </div>
 
 <h2 style="text-align: center;">Detalles de las Salas:</h2>
@@ -112,5 +114,19 @@
 
         // Actualizar el contador de jugadores
         document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
+
+        // Habilitar el botón de inicio si el número de jugadores es igual al máximo
+        if (playerSet.size === maxPlayers) {
+            document.getElementById("startGameButton").disabled = false;
+        }
+    }
+
+    /**
+     * Función que redirige a la página de "upload_memes" cuando se pulsa el botón "Iniciar Juego".
+     */
+    function startGame() {
+        // Aquí puedes hacer la lógica que necesitas antes de la redirección
+        // Por ejemplo, verificar si todos los jugadores están listos
+        window.location.href = "/upload_memes"; // Redirigir a la página de upload_memes
     }
 </script>

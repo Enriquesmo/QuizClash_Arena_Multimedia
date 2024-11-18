@@ -4,12 +4,23 @@
     ViewData["Title"] = "Subir Imágenes o Videos";
 }
 
+
+<!-- Incluir jQuery antes de SignalR -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script> <!-- Asegúrate de que esta referencia sea correcta -->
+
+
 <h1 style="text-align: center;">Sube tus Imágenes o Videos</h1>
+
+<!-- Contador de tiempo -->
+<div id="timer" style="text-align: center; font-size: 24px; font-weight: bold; margin-top: 20px;">
+    01:30
+</div>
 
 <div style="text-align: center;">
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="hidden" name="numPlayers" value="@Model.NumPlayers" /> <!-- Campo oculto para el número de jugadores -->
-        <input type="file" name="files" accept="image/*, video/*" multiple required /><br /><br />
+        <input type="file" name="files" accept="image/*, video/*" multiple required onchange="previewFiles()" /><br /><br />
         <button type="submit">Subir</button>
     </form>
 </div>
@@ -21,6 +32,7 @@
 
 <script src="~/lib/signalr/signalr.js"></script>
 <script>
+
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/gameHub")
         .build();
@@ -54,4 +66,61 @@
             console.error("Error al subir el meme");
         }
     };
+
+    // Función para previsualizar los archivos seleccionados
+    function previewFiles() {
+        const fileList = document.querySelector('input[type="file"]').files;
+        const previewContainer = document.getElementById("uploadedMemes");
+
+        // Crear una lista de archivos previsualizados sin eliminar los anteriores
+        const newPreviewList = document.createElement("ul");
+        for (let i = 0; i < fileList.length; i++) {
+            const file = fileList[i];
+            const listItem = document.createElement("li");
+
+            // Si es una imagen
+            if (file.type.startsWith("image/")) {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.style.width = "100px";
+                img.style.height = "100px";
+                listItem.appendChild(img);
+            }
+            // Si es un video
+            else if (file.type.startsWith("video/")) {
+                const video = document.createElement("video");
+                video.src = URL.createObjectURL(file);
+                video.style.width = "100px";
+                video.style.height = "100px";
+                video.controls = true;
+                listItem.appendChild(video);
+            }
+
+            newPreviewList.appendChild(listItem);
+        }
+
+        // Mostrar las previsualizaciones sin borrar las anteriores
+        previewContainer.appendChild(newPreviewList);
+    }
+
+    // Contador de tiempo (1 minuto y 30 segundos)
+    let timeLeft = 90; // 90 segundos (1 minuto y 30 segundos)
+    const timerElement = document.getElementById("timer");
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+        } else {
+            clearInterval(timerInterval);
+            alert("¡El tiempo ha terminado!");
+        }
+    }
+
+    // Actualizar el contador cada segundo
+    updateTimer(); // Llamar inmediatamente para mostrar el tiempo inicial
+    const timerInterval = setInterval(updateTimer, 1000);
 </script>
