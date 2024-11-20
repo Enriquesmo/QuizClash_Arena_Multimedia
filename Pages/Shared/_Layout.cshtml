@@ -10,7 +10,7 @@
     <style>
         /* Ajuste para mover el icono más a la izquierda y animación hover */
         .navbar-icon {
-            margin-left: -70px; 
+            margin-left: 10px; 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             margin-top: 20px;
         }
@@ -23,12 +23,11 @@
 </head>
 <body>
     <header>
-            <div class="container">
-            <a asp-area="" asp-page="/Index" class="navbar-brand">
-                <img src="~/images/icono.jpeg" alt="Icono" class="navbar-icon" style="width: 130px; height: auto;" />
-            </a>
-            </div>
+        <a asp-area="" asp-page="/Index">
+            <img src="~/images/icono.jpeg" alt="Icono" class="navbar-icon" style="width: 130px; height: auto; position: absolute; top: 20px; left: 20px;" />
+        </a>
     </header>
+
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -36,11 +35,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - QuizClash_Arena_Multimedia - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
