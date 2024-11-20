@@ -1,8 +1,28 @@
 ﻿@page
-@model QuizClash_Arena_Multimedia.Pages.Login_TwitchModel
-@{
-    ViewData["Title"] = "Iniciar sesión con Twitch";
+@using QuizClash_Arena_Multimedia.Services
+@inject TwitchApiService TwitchApiService  // Inyectar el servicio
+
+<h2>Bienvenido a QuizClash</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    var userInfo = await TwitchApiService.GetAccessTokenAsync("c534o1r7o7kts8edwrgfrefhbwsm06", "8v4ejdxprsji3db3ikmw8f7bwe6ziq");
+    //var name = await TwitchApiService.GetTwitchUserNameAsync(userInfo, "c534o1r7o7kts8edwrgfrefhbwsm06");
+    <p>Bienvenido </p>
+
+    @* Aquí puedes hacer la llamada al servicio para obtener información del usuario de Twitch *@
+   // @{
+   
+        //string accessToken = "<TOKEN_DE_ACCESO>";  // Este token debe provenir de la autenticación de Twitch
+        //var userInfo = await TwitchApiService.GetUserInfo(accessToken);
+   // }
+
+    //<p>Información de Twitch: @userInfo</p>
+}
+else
+{
+    
+    <p>Por favor, inicia sesión con Twitch.</p>
+    <a href="/signin-twitch">Iniciar sesión con Twitch</a>
 }
 
-<h2>Iniciar sesión con Twitch</h2>
-<a href="/signin-twitch">Iniciar sesión con Twitch</a>
