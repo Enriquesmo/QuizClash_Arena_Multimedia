@@ -6,41 +6,39 @@
 
 <!-- Incluir jQuery antes de SignalR -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/lib/signalr/dist/browser/signalr.js"></script> <!-- Asegúrate de que esta referencia sea correcta -->
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
 
 <h1 style="text-align: center;">Sala de Espera</h1>
 <p style="text-align: center;">Código de la Sala: <strong>@Model.RoomCode</strong></p>
 
 <h2 style="text-align: center;">Jugadores en la partida:</h2>
-<p style="text-align: center;">Jugadores: <strong id="playerCount">0 / 0</strong></p>
-<ul id="playerList" style="text-align: center;"></ul>
+<p style="text-align: center;">Jugadores: <strong id="playerCount">0 / @Model.MaxPlayers</strong></p>
+<ul id="playerList" style="text-align: center;">
+    @foreach (var player in Model.Players)
+    {
+        <li>
+            <img src="@player.AvatarUrl" style="width: 50px; height: 50px;" />
+            @player.Name
+        </li>
+    }
+</ul>
 
 <div style="text-align: center;">
     <form method="get" asp-page="upload_memes">
-        <button type="submit">iniciar Juego</button>
+        <button type="submit">Iniciar Juego</button>
     </form>
 </div>
 
-<h2 style="text-align: center;">Detalles de las Salas:</h2>
-<ul id="roomDetails" style="text-align: center;"></ul>
-
 <script>
-    /**
-     * Configura la conexión con el hub de SignalR y maneja la lógica de unión a la sala.
-     */
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
     const roomCode = "@Model.RoomCode";
     const playerName = "@Model.PlayerName";
     const playerAvatar = "@Model.PlayerAvatar";
-    const playerSet = new Set(); // Conjunto para almacenar los nombres de los jugadores
-    let maxPlayers = 0;
+    const playerSet = new Set();
+    const maxPlayers = @Model.MaxPlayers;
 
     connection.start().then(function () {
         console.log("Conectado al hub de SignalR");
-        return connection.invoke("GetMaxPlayers", roomCode);
-    }).then(max => {
-        maxPlayers = max;
-        document.getElementById("playerCount").innerText = `0 / ${maxPlayers}`;
         if (playerName && playerAvatar) {
             return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
         }
@@ -61,48 +59,16 @@
         console.error(err.toString());
     });
 
-    /**
-     * Llama al método GetAllRooms y muestra los detalles de las salas.
-     */
-    connection.invoke("GetAllRooms").then(rooms => {
-        const roomDetails = document.getElementById("roomDetails");
-        for (const [roomCode, playerLimit] of Object.entries(rooms)) {
-            const listItem = document.createElement("li");
-            listItem.textContent = `Sala: ${roomCode}, Límite de Jugadores: ${playerLimit}`;
-            roomDetails.appendChild(listItem);
-        }
-    }).catch(function (err) {
-        console.error(err.toString());
-    });
-
-    /**
-     * Maneja el evento cuando un nuevo jugador se une a la sala.
-     */
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
-        if (playerSet.has(playerName)) {
-            console.log(`Jugador ${playerName} ya está en la lista, no se añadirá de nuevo.`);
-            return; // Si el jugador ya está en el conjunto, no lo añadimos de nuevo
+        if (!playerSet.has(playerName)) {
+            addPlayerToList(playerName, playerAvatar);
         }
-
-        addPlayerToList(playerName, playerAvatar);
     });
 
-    /**
-     * Añade un jugador a la lista de jugadores en la interfaz.
-     */
     function addPlayerToList(playerName, playerAvatar) {
-        if (!playerName || !playerAvatar) {
-            console.log("Nombre o avatar del jugador no definidos, no se añadirá a la lista.");
-            return; // No añadir si el nombre o avatar no están definidos
-        }
-
-        console.log(`Nuevo jugador añadido: ${playerName}`);
-        playerSet.add(playerName); // Añadir el nombre del jugador al conjunto
-
         const playerList = document.getElementById("playerList");
         const listItem = document.createElement("li");
 
-        // Crear una imagen del avatar
         const avatarImg = document.createElement("img");
         avatarImg.src = playerAvatar;
         avatarImg.style.width = "50px";
@@ -112,21 +78,7 @@
         listItem.appendChild(document.createTextNode(` ${playerName}`));
         playerList.appendChild(listItem);
 
-        // Actualizar el contador de jugadores
+        playerSet.add(playerName);
         document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
-
-        // Habilitar el botón de inicio si el número de jugadores es igual al máximo
-        if (playerSet.size === maxPlayers) {
-            document.getElementById("startGameButton").disabled = false;
-        }
-    }
-
-    /**
-     * Función que redirige a la página de "upload_memes" cuando se pulsa el botón "Iniciar Juego".
-     */
-    function startGame() {
-        // Aquí puedes hacer la lógica que necesitas antes de la redirección
-        // Por ejemplo, verificar si todos los jugadores están listos
-        window.location.href = "/upload_memes"; // Redirigir a la página de upload_memes
     }
 </script>

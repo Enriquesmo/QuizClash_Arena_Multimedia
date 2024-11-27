@@ -1,43 +1,51 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.SignalR;
-using QuizClash_Arena_Multimedia.Hubs;
+using System.IO;
+using System.Text.Json;
+using System.Collections.Generic;
+using QuizClash_Arena_Multimedia.Models;
 
 namespace QuizClash_Arena_Multimedia.Pages
 {
-    public class Create_gameModel : PageModel
+    public class CreateGameModel : PageModel
     {
-        private readonly IHubContext<GameHub> _hubContext;
-
-        public Create_gameModel(IHubContext<GameHub> hubContext)
-        {
-            _hubContext = hubContext;
-        }
-
         [BindProperty]
-        public int NumPlayers { get; set; }
-
+        public string RoomCode { get; set; }
+        [BindProperty]
+        public int MaxPlayers { get; set; }
         [BindProperty]
         public string PlayerName { get; set; }
-
         [BindProperty]
         public string PlayerAvatar { get; set; }
+        [BindProperty]
+        public string WebSocketId { get; set; } // Nuevo campo para el WebSocketId
 
-        public async Task<IActionResult> OnPostCreateGameAsync()
+        public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            // Generar un RoomCode de 6 cifras aleatorias
+            RoomCode = new Random().Next(100000, 999999).ToString();
 
-            // Generar un código de sala único
-            var roomCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
+            // Crear el jugador que crea la sala
+            var creator = new Player(PlayerName, PlayerAvatar, WebSocketId);
 
-            // Crear la sala y guardarla en el GameHub
-            await _hubContext.Clients.All.SendAsync("CreateRoom", roomCode, NumPlayers);
+            // Crear un objeto para representar la sala utilizando el constructor
+            var room = new Room(RoomCode, MaxPlayers, creator);
 
-            // Redirigir a la sala de espera
-            return RedirectToPage("WaitingRoom", new { roomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
+            // Añadir el creador a la lista de jugadores
+            room.Players.Add(creator);
+
+            // Ruta para guardar el archivo JSON de la sala
+            string roomFilePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");
+
+            // Crear la carpeta si no existe
+            Directory.CreateDirectory(Path.GetDirectoryName(roomFilePath));
+
+            // Guardar el archivo JSON
+            string roomJson = JsonSerializer.Serialize(room, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(roomFilePath, roomJson);
+
+            // Redirigir a la sala de espera con los datos del creador
+            return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
         }
     }
 }

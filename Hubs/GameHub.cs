@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using QuizClash_Arena_Multimedia.Models;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Linq;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -12,14 +14,14 @@ namespace QuizClash_Arena_Multimedia.Hubs
     public class GameHub : Hub
     {
         // ====================================================================
-        // Variables estáticos
+        // Variables estáticas
         // ====================================================================
         private static TwitchClient twitchClient;
         private static Dictionary<string, List<string>> playerMemes = new Dictionary<string, List<string>>();
         private static Dictionary<string, int> playerScores = new Dictionary<string, int>();
-        private static Dictionary<string, int> voteCount = new Dictionary<string, int>(); /*** Diccionario para contar los votos ***/
+        private static Dictionary<string, int> voteCount = new Dictionary<string, int>();
         private static int currentRound = 0;
-        private static readonly ConcurrentDictionary<string, Room> Rooms = new ConcurrentDictionary<string, Room>();
+        private static readonly string RoomsDirectory = Path.Combine("wwwroot", "rooms"); // Ruta de almacenamiento de salas JSON
 
         // ====================================================================
         // Constructor
@@ -30,6 +32,10 @@ namespace QuizClash_Arena_Multimedia.Hubs
             {
                 InitializeTwitchClient();
             }
+        }
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
         }
 
         // ====================================================================
@@ -78,66 +84,102 @@ namespace QuizClash_Arena_Multimedia.Hubs
         // ====================================================================
         // Métodos de gestión de salas
         // ====================================================================
-        /**
-         * Crea una nueva sala y la guarda en el diccionario de salas.
-         */
-        public async Task CreateRoom(string roomCode, int playerLimit)
+        public async Task CreateRoom(string roomCode, int playerLimit, string creatorName, string creatorAvatar, string creatorWebSocketID)
         {
-            var room = new Room(roomCode, playerLimit);
-            Rooms[roomCode] = room;
-            await Clients.All.SendAsync("RoomCreated", roomCode, playerLimit);
-        }
-
-        /**
-         * Añade un jugador a una sala y notifica a los jugadores de la sala
-         */
-        public async Task JoinRoom(string roomCode, string playerName, string playerAvatar)
-        {
-            var player = new Player(playerName, playerAvatar);
-            Rooms.AddOrUpdate(roomCode, new Room(roomCode, 10) { Players = new List<Player> { player } }, (key, existingRoom) =>
+            try
             {
-                existingRoom.Players.Add(player);
-                return existingRoom;
-            });
+                var creator = new Player(creatorName, creatorAvatar, creatorWebSocketID);
+                var room = new Room(roomCode, playerLimit, creator);
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
-            await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
-        }
+                // Guardar la información de la sala en un archivo JSON
+                var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+                var json = JsonSerializer.Serialize(room, new JsonSerializerOptions { WriteIndented = true });
 
-        /**
-         * Obtiene la lista de jugadores en una sala.
-         */
-        public Task<List<Player>> GetPlayersInRoom(string roomCode)
-        {
-            Rooms.TryGetValue(roomCode, out var room);
-            return Task.FromResult(room?.Players ?? new List<Player>());
-        }
+                if (!Directory.Exists(RoomsDirectory))
+                {
+                    Directory.CreateDirectory(RoomsDirectory);
+                }
 
-        /**
-         * Obtiene el número máximo de jugadores en una sala.
-         */
-        public Task<int> GetMaxPlayers(string roomCode)
-        {
-            if (Rooms.TryGetValue(roomCode, out var room))
-            {
-                return Task.FromResult(room.PlayerLimit);
+                await File.WriteAllTextAsync(filePath, json);
+                await Clients.All.SendAsync("RoomCreated", roomCode, playerLimit);
             }
-            return Task.FromResult(0);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear el archivo JSON: {ex.Message}");
+                throw;
+            }
         }
 
-        /**
-         * Obtiene todas las salas con su límite de jugadores.
-         */
+        public async Task JoinRoom(string roomCode, string playerName, string playerAvatar, string playerWebsocket)
+        {
+            var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(filePath))
+            {
+                var json = await File.ReadAllTextAsync(filePath);
+                var room = JsonSerializer.Deserialize<Room>(json);
+
+                if (room != null)
+                {
+                    var player = new Player(playerName, playerAvatar, playerWebsocket);
+                    room.Players.Add(player);
+
+                    // Guardar la sala actualizada
+                    json = JsonSerializer.Serialize(room, new JsonSerializerOptions { WriteIndented = true });
+                    await File.WriteAllTextAsync(filePath, json);
+
+                    await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+                    await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
+                }
+            }
+        }
+
+
+        public async Task<List<Player>> GetPlayersInRoom(string roomCode)
+        {
+            var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(filePath))
+            {
+                var json = await File.ReadAllTextAsync(filePath);
+                var room = JsonSerializer.Deserialize<Room>(json);
+                return room?.Players ?? new List<Player>();
+            }
+
+            return new List<Player>();
+        }
+
+        public async Task<int> GetMaxPlayers(string roomCode)
+        {
+            var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(filePath))
+            {
+                var json = await File.ReadAllTextAsync(filePath);
+                var room = JsonSerializer.Deserialize<Room>(json);
+                return room?.NumPlayers ?? 0;
+            }
+
+            return 0;
+        }
+
         public async Task<Dictionary<string, int>> GetAllRooms()
         {
             var roomDetails = new Dictionary<string, int>();
+            var directoryInfo = new DirectoryInfo(RoomsDirectory);
 
-            foreach (var room in Rooms)
+            foreach (var file in directoryInfo.GetFiles("*.json"))
             {
-                roomDetails.Add(room.Key, room.Value.PlayerLimit);
+                var json = await File.ReadAllTextAsync(file.FullName);
+                var room = JsonSerializer.Deserialize<Room>(json);
+
+                if (room != null)
+                {
+                    roomDetails.Add(room.RoomCode, room.NumPlayers);
+                }
             }
 
-            return await Task.FromResult(roomDetails);
+            return roomDetails;
         }
 
         // ====================================================================

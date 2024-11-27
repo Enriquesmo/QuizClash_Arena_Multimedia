@@ -2,19 +2,19 @@
 {
     public class Player
     {
-        public string Name { get; set; }
-        public string AvatarUrl { get; set; }
+        public string name { get; set; }
+        public string Avatar { get; set; }
+        public string WebSocketId { get; set; }
 
         /**
          * Constructor de la clase Player.
-         * Inicializa las propiedades Name y AvatarUrl.
+         * Inicializa las propiedades Name y Avatar.
          */
-        public Player(string name, string avatarUrl)
+        public Player(string name, string avatar, string websocket)
         {
-            Name = name;
-            AvatarUrl = avatarUrl;
+            this.name = name;
+            Avatar = avatar;
+            WebSocketId = websocket;
         }
     }
 }
-
-

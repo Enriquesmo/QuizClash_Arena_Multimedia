@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.10" />
@@ -19,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Rooms\" />
     <Folder Include="wwwroot\images\Memes\" />
+    <Folder Include="wwwroot\rooms\" />
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 

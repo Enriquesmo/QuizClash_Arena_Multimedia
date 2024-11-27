@@ -17,6 +17,24 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // ====================================================================
+// Limpiar la carpeta "data/rooms" al iniciar la aplicación
+// ====================================================================
+
+var roomsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data", "rooms");
+
+if (Directory.Exists(roomsDirectory))
+{
+    foreach (var file in Directory.GetFiles(roomsDirectory))
+    {
+        File.Delete(file); // Eliminar cada archivo en la carpeta
+    }
+}
+else
+{
+    Directory.CreateDirectory(roomsDirectory); // Crear la carpeta si no existe
+}
+
+// ====================================================================
 // Agregar servicios
 // ====================================================================
 
@@ -115,7 +133,65 @@ app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
 // ====================================================================
 // Endpoints
 // ====================================================================
+app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFactory) =>
+{
+    context.Response.Cookies.Delete("access_token");
+    context.Response.Cookies.Delete("brodcasterId");
+    var accessToken = context.Request.Cookies["access_token"];
+    var broadcasterId = context.Request.Cookies["brodcasterId"];
+    // Verificamos si ya están presentes las cookies
+    if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(broadcasterId))
+    {
+        return Results.Redirect("/Login_Twitch");
+    }
+    // Si no, procedemos con la autenticación
+    var authenticateResult = await context.AuthenticateAsync("Twitch");
+    if (!authenticateResult.Succeeded)
+    {
+        return Results.BadRequest("No se pudo autenticar con Twitch.");
+    }
+    // Acceder al token de acceso
+    accessToken = authenticateResult.Properties.GetTokenValue("access_token");
+    var clientId = builder.Configuration["Twitch:ClientId"];
+    if (string.IsNullOrEmpty(accessToken))
+    {
+        return Results.BadRequest("No se obtuvo el token de acceso.");
+    }
+    // Hacemos una solicitud para obtener el broadcasterId
+    var httpClient = clientFactory.CreateClient();
+    var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://api.twitch.tv/helix/users");
+    requestMessage.Headers.Add("Authorization", $"Bearer {accessToken}");
+    requestMessage.Headers.Add("Client-Id", clientId);
+    var response = await httpClient.SendAsync(requestMessage);
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.BadRequest("No se pudo obtener la información del usuario desde Twitch.");
+    }
+    var userInfo = await response.Content.ReadFromJsonAsync<UserInfoResponse>();
+    broadcasterId = userInfo?.Data?.FirstOrDefault()?.Id;
+    if (string.IsNullOrEmpty(broadcasterId))
+    {
+        return Results.BadRequest("No se pudo obtener el broadcasterId.");
+    }
 
+    // Guardamos el access_token y broadcasterId en cookies
+    context.Response.Cookies.Append("access_token", accessToken, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Lax,
+        Expires = DateTimeOffset.UtcNow.AddDays(30)
+    });
+    context.Response.Cookies.Append("brodcasterId", broadcasterId, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Lax,
+        Expires = DateTimeOffset.UtcNow.AddDays(30)
+    });
+
+    return Results.Redirect("/Login_Twitch");
+});
 app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clientFactory, TwitchApiService twitchApiService) =>
 {
     var accessToken = context.Request.Cookies["access_token"];

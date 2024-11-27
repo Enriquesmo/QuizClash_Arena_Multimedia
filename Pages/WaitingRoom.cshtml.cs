@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.IO;
+using System.Text.Json;
+using System.Collections.Generic;
 
 namespace QuizClash_Arena_Multimedia.Pages
 {
@@ -7,17 +10,45 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string RoomCode { get; set; }
         public string PlayerName { get; set; }
         public string PlayerAvatar { get; set; }
+        public int MaxPlayers { get; set; }
+        public List<Player> Players { get; set; }
 
-        /**
-         * Método que se ejecuta cuando se realiza una solicitud GET a la página.
-         * Inicializa las propiedades RoomCode, PlayerName y PlayerAvatar con los valores proporcionados, 
-         * ya sea del creador de la Sala o de un jugador nuevo.
-         */
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
             RoomCode = roomCode;
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;
+
+            // Ruta del archivo JSON de la sala
+            string roomFilePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
+
+            // Leer el archivo JSON y obtener los jugadores
+            if (System.IO.File.Exists(roomFilePath))
+            {
+                string roomJson = System.IO.File.ReadAllText(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                MaxPlayers = roomData?.NumPlayers ?? 0;
+                Players = roomData?.Players ?? new List<Player>();
+            }
+            else
+            {
+                MaxPlayers = 0;
+                Players = new List<Player>();
+            }
+        }
+
+        // Clases auxiliares
+        public class Room
+        {
+            public string RoomCode { get; set; }
+            public int NumPlayers { get; set; }
+            public List<Player> Players { get; set; }
+        }
+
+        public class Player
+        {
+            public string Name { get; set; }
+            public string AvatarUrl { get; set; }
         }
     }
 }

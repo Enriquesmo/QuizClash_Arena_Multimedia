@@ -26,6 +26,7 @@
             <option value="/images/avatars/avatar_8.png">Avatar 8</option>
         </select>
         <br /><br />
+        <input type="hidden" id="webSocketId" name="WebSocketId" />
         <div id="avatarPreview" style="margin-top: 10px;">
             <img id="avatarImage" src="" alt="Vista previa del avatar" style="display: none; width: 100px; height: 100px;" />
         </div>
@@ -34,11 +35,20 @@
     </form>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 <script>
-    /**
-     * Muestra la vista previa del avatar seleccionado.
-     * Se ejecuta cuando el usuario selecciona un avatar del menú desplegable.
-     */
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+
+    connection.start().then(function () {
+        connection.invoke("GetConnectionId").then(function (connectionId) {
+            document.getElementById("webSocketId").value = connectionId;
+        });
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
     document.getElementById('playerAvatar').addEventListener('change', function (event) {
         const selectedAvatar = event.target.value;
         const avatarImage = document.getElementById('avatarImage');
@@ -46,4 +56,3 @@
         avatarImage.style.display = 'block';
     });
 </script>
-
