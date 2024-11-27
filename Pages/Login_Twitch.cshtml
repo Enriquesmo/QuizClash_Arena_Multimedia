@@ -48,26 +48,27 @@
         display: inline-block;
         font-size: 1.2em;
         padding: 10px 20px;
-        background-color: #ff4500;
+        background-color: #ff4500; /* Naranja inicial */
         color: white;
         text-decoration: none;
         border-radius: 10px;
-        transition: background-color 0.3s, transform 0.3s;
+        transition: background 0.5s, transform 0.3s;
         margin: 10px 5px;
     }
 
-    .btn:hover {
-        background-color: #ff4500;
-        transform: scale(1.1);
-    }
+        .btn:hover {
+            background: linear-gradient(90deg, #ff3366, #ff6699); /* Cambia a un gradiente de rosa */
+            transform: scale(1.1);
+        }
 
     .btn-primary {
-        background-color: #ff4500;
+        background-color: #ff4500; /* Naranja inicial */
     }
 
-    .btn-primary:hover {
-        background-color: #ff4500;
-    }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #ff3366, #ff6699); /* Cambia a un gradiente de rosa */
+            transform: scale(1.1);
+        }
 </style>
 
 <div class="container">
@@ -82,7 +83,6 @@
         <p>Tu Broadcaster ID es: <strong>@broadcasterId</strong></p>
 
         <a href="/prueba2" class="btn btn-primary">Iniciar emisión en Twitch</a>
-        <a href="/signin-twitch" class="btn">Cerrar sesión</a>
     }
     else
     {
