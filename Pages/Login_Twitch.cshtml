@@ -2,23 +2,91 @@
 @using QuizClash_Arena_Multimedia.Services
 @inject TwitchApiService TwitchApiService  // Inyectamos el servicio para interactuar con Twitch
 
-<h2>Bienvenido a QuizClash</h2>
-
-@if (User.Identity.IsAuthenticated)
-{
-    var username = User.Identity.Name;
-    var broadcasterId = User.FindFirst("brodcasterId")?.Value;
-
-    <p>Bienvenido, @username</p>
-    <p>Tu Broadcaster ID es: @broadcasterId</p>
-    
-    <!-- Enlace para iniciar el stream -->
-    <a href="/prueba2" class="btn btn-primary">Iniciar emisión en Twitch</a>
-    <a href="/signin-twitch">Iniciar sesión con Twitch</a>
-
+@{
+    ViewData["Title"] = "Bienvenido a QuizClash";
 }
-else
-{
-    <p>Por favor, inicia sesión con Twitch.</p>
-    <a href="/signin-twitch">Iniciar sesión con Twitch</a>
-}
+
+<style>
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        text-align: center;
+        margin: 50px auto;
+        padding: 20px;
+        max-width: 600px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    p {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+        color: #ffcc00;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn {
+        display: inline-block;
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #ff4500;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: background-color 0.3s, transform 0.3s;
+        margin: 10px 5px;
+    }
+
+    .btn:hover {
+        background-color: #ff4500;
+        transform: scale(1.1);
+    }
+
+    .btn-primary {
+        background-color: #ff4500;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff4500;
+    }
+</style>
+
+<div class="container">
+    <h2>Bienvenido a QuizClash</h2>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        var username = User.Identity.Name;
+        var broadcasterId = User.FindFirst("brodcasterId")?.Value;
+
+        <p>¡Hola, <strong>@username</strong>! 🎮</p>
+        <p>Tu Broadcaster ID es: <strong>@broadcasterId</strong></p>
+
+        <a href="/prueba2" class="btn btn-primary">Iniciar emisión en Twitch</a>
+        <a href="/signin-twitch" class="btn">Cerrar sesión</a>
+    }
+    else
+    {
+        <p>Por favor, inicia sesión con Twitch para acceder a las funciones completas.</p>
+        <a href="/signin-twitch" class="btn btn-primary">Iniciar sesión con Twitch</a>
+    }
+</div>
