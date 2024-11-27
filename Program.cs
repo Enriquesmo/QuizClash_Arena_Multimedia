@@ -116,76 +116,35 @@ app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
 // Endpoints
 // ====================================================================
 
-app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFactory) =>
+app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clientFactory, TwitchApiService twitchApiService) =>
 {
-    context.Response.Cookies.Delete("access_token");
-    context.Response.Cookies.Delete("brodcasterId");
-
     var accessToken = context.Request.Cookies["access_token"];
     var broadcasterId = context.Request.Cookies["brodcasterId"];
 
-    // Verificamos si ya están presentes las cookies
-    if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(broadcasterId))
+    if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(broadcasterId))
     {
-        return Results.Redirect("/Login_Twitch");
+        return Results.BadRequest("No se encuentran los datos necesarios.");
     }
 
-    // Si no, procedemos con la autenticación
-    var authenticateResult = await context.AuthenticateAsync("Twitch");
-
-    if (!authenticateResult.Succeeded)
+    try
     {
-        return Results.BadRequest("No se pudo autenticar con Twitch.");
+        // Obtener la clave de transmisión
+        var streamKey = await twitchApiService.GetStreamKeyAsync(
+            accessToken,
+            builder.Configuration["Twitch:ClientId"],
+            broadcasterId
+        );
+
+        // Redirigir a la página Key_transmision con la clave como parámetro
+        return Results.Redirect($"/Key_transmision?streamKey={streamKey}&broadcasterId={broadcasterId}");
     }
-
-    // Acceder al token de acceso
-    accessToken = authenticateResult.Properties.GetTokenValue("access_token");
-    var clientId = builder.Configuration["Twitch:ClientId"];
-
-    if (string.IsNullOrEmpty(accessToken))
+    catch (Exception ex)
     {
-        return Results.BadRequest("No se obtuvo el token de acceso.");
+        return Results.BadRequest($"Error al obtener la clave de transmisión: {ex.Message}");
     }
-
-    // Hacemos una solicitud para obtener el broadcasterId
-    var httpClient = clientFactory.CreateClient();
-    var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://api.twitch.tv/helix/users");
-    requestMessage.Headers.Add("Authorization", $"Bearer {accessToken}");
-    requestMessage.Headers.Add("Client-Id", clientId);
-
-    var response = await httpClient.SendAsync(requestMessage);
-    if (!response.IsSuccessStatusCode)
-    {
-        return Results.BadRequest("No se pudo obtener la información del usuario desde Twitch.");
-    }
-
-    var userInfo = await response.Content.ReadFromJsonAsync<UserInfoResponse>();
-    broadcasterId = userInfo?.Data?.FirstOrDefault()?.Id;
-
-    if (string.IsNullOrEmpty(broadcasterId))
-    {
-        return Results.BadRequest("No se pudo obtener el broadcasterId.");
-    }
-
-    // Guardamos el access_token y broadcasterId en cookies
-    context.Response.Cookies.Append("access_token", accessToken, new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = true,
-        SameSite = SameSiteMode.Lax,
-        Expires = DateTimeOffset.UtcNow.AddDays(30)
-    });
-
-    context.Response.Cookies.Append("brodcasterId", broadcasterId, new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = true,
-        SameSite = SameSiteMode.Lax,
-        Expires = DateTimeOffset.UtcNow.AddDays(30)
-    });
-
-    return Results.Redirect("/Login_Twitch");
 });
+
+
 
 app.MapGet("/signin-twitch", async (HttpContext context) =>
 {
@@ -200,31 +159,6 @@ app.MapGet("/prueba2", async (HttpContext context) =>
     {
         RedirectUri = "/start-stream"
     });
-});
-app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clientFactory, TwitchApiService twitchApiService) =>
-{
-
-    var accessToken = context.Request.Cookies["access_token"];
-    var broadcasterId = context.Request.Cookies["brodcasterId"];
-
-    if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(broadcasterId))
-    {
-        return Results.BadRequest("No se encuentran los datos necesarios.");
-    }
-
-    try
-    {
-        // Obtener la clave de transmisión
-        var streamKey = await twitchApiService.GetStreamKeyAsync(accessToken, builder.Configuration["Twitch:ClientId"], broadcasterId);
-
-        // Aquí deberías enviar la clave de transmisión a tu cliente (como OBS)
-        // Esto es solo un ejemplo de mostrar la clave.
-        return Results.Ok($"La clave de transmisión es: {streamKey}");
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest($"Error al obtener la clave de transmisión: {ex.Message}");
-    }
 });
 
 

@@ -78,11 +78,16 @@
     {
         var username = User.Identity.Name;
         var broadcasterId = User.FindFirst("brodcasterId")?.Value;
+        var streamKey = User.FindFirst("StreamKey")?.Value;
 
         <p>¡Hola, <strong>@username</strong>! 🎮</p>
         <p>Tu Broadcaster ID es: <strong>@broadcasterId</strong></p>
-
+        @if (!string.IsNullOrEmpty(streamKey))
+        {
+            <p>Tu clave de transmisión es: <strong>@streamKey</strong></p>
+        }
         <a href="/prueba2" class="btn btn-primary">Iniciar emisión en Twitch</a>
+        <a href="/signin-twitch" class="btn btn-primary">Iniciar sesión con Twitch</a>
     }
     else
     {
