@@ -5,93 +5,93 @@
 }
 <style>
 
-body {
-    background-image: url('/images/fondo_azul.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    font-family: Arial, sans-serif;
-    color: white;
-    margin: 0;
-    padding: 0;
-}
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-.container {
-    text-align: center;
-    margin: 30px auto;
-    padding: 10px;
-    max-width: 800px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
+    .container {
+        text-align: center;
+        margin: 30px auto;
+        padding: 10px;
+        max-width: 800px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
 
-h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, #ff6699, #ffcc00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-}
+    h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
 
-h2 {
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: #ffcc00;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
+    h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #ffcc00;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
 
-ul#playerList {
-    list-style-type: none;
-    padding: 0;
-}
+    ul#playerList {
+        list-style-type: none;
+        padding: 0;
+    }
 
-ul#playerList li {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
+        ul#playerList li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
 
-ul#playerList li img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+            ul#playerList li img {
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
 
-ul#playerList li img:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 12px rgba(255, 255, 255, 0.4);
-}
+                ul#playerList li img:hover {
+                    transform: scale(1.1);
+                    box-shadow: 0 6px 12px rgba(255, 255, 255, 0.4);
+                }
 
-p {
-    font-size: 1.2em;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
+    p {
+        font-size: 1.2em;
+        color: white;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
 
-button {
-    font-size: 1.5em;
-    padding: 10px 30px;
-    background-color: #ff6633;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-    margin-top: 20px;
-}
+    button {
+        font-size: 1.5em;
+        padding: 10px 30px;
+        background-color: #ff6633;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        margin-top: 20px;
+    }
 
-button:hover {
-    background-color: #ff4500;
-    transform: scale(1.1);
-}
+        button:hover {
+            background-color: #ff4500;
+            transform: scale(1.1);
+        }
 </style>
 
 
@@ -125,48 +125,37 @@ button:hover {
     const roomCode = "@Model.RoomCode";
     const playerName = "@Model.PlayerName";
     const playerAvatar = "@Model.PlayerAvatar";
-    const playerSet = new Set();
     const maxPlayers = "@Model.MaxPlayers";
 
     connection.start()
         .then(function () {
             console.log("Conexión con SignalR establecida.");
-            if (playerName && playerAvatar && !playerSet.has(playerName)) {
-                playerSet.add(playerName); // Evitar duplicados en el cliente
+            if (playerName && playerAvatar) {
                 return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
             }
         })
         .then(() => {
             console.log(`Unido a la sala: ${roomCode} como ${playerName}`);
-            return connection.invoke("GetPlayersInRoom", roomCode);
-        }
-    }).then(players => {
-        if (players) {
-            players.forEach(player => {
-                if (!playerSet.has(player.name)) {
-                    addPlayerToList(player.name, player.avatarUrl);
-                }
-            });
-        }
-    }).catch(function (err) {
-        console.error(err.toString());
+            return updatePlayerList();
+        }).catch(function (err) {
+            console.error(err.toString());
         });
 
-
-
-
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
-        if (!playerSet.has(playerName)) {
-            playerSet.add(playerName);
-            addPlayerToList(playerName, playerAvatar);
+        addPlayerToList(playerName, playerAvatar);
 
-            // Actualizar el contador de jugadores
-            document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
-        }
+        // Actualizar el contador de jugadores
+        document.getElementById("playerCount").innerText = `${document.getElementById("playerList").children.length} / ${maxPlayers}`;
     });
 
     function addPlayerToList(playerName, playerAvatar) {
         const playerList = document.getElementById("playerList");
+
+        // Verificar si el jugador ya está en la lista
+        const existingPlayer = Array.from(playerList.children).find(li => li.textContent.trim() === playerName);
+        if (existingPlayer) {
+            return;
+        }
 
         const listItem = document.createElement("li");
         const avatarImg = document.createElement("img");
@@ -177,9 +166,23 @@ button:hover {
         listItem.appendChild(avatarImg);
         listItem.appendChild(document.createTextNode(` ${playerName}`));
         playerList.appendChild(listItem);
+        document.getElementById("playerCount").innerText = `${playerList.children.length} / ${maxPlayers}`;
     }
 
-        playerSet.add(playerName);
-        document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
+    function updatePlayerList() {
+        return connection.invoke("GetPlayersInRoom", roomCode).then(players => {
+            const playerList = document.getElementById("playerList");
+            playerList.innerHTML = ""; // Limpiar la lista actual
+            if (players) {
+                players.forEach(player => {
+                    addPlayerToList(player.name, player.avatar);
+                });
+            }
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
     }
+
+    // Recargar la lista de jugadores cada 5 segundos
+    setInterval(updatePlayerList, 5000);
 </script>

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Data\memes_repetidos\reposteria_Ana.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
@@ -39,7 +43,6 @@
     <None Include="wwwroot\images\avatars\avatar_9.png" />
     <None Include="wwwroot\images\fondo.jpg" />
     <None Include="wwwroot\images\ImagenOriginalAvatars.jpg" />
-    <None Include="wwwroot\images\reposteria_Ana.png" />
   </ItemGroup>
 
 </Project>

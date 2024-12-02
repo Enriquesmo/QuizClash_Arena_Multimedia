@@ -36,6 +36,7 @@ namespace QuizClash_Arena_Multimedia.Pages
                 MaxPlayers = 0;
                 playerList = new List<Player>();
             }
+
         }
     }
 }

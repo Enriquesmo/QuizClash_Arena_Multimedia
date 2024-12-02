@@ -135,6 +135,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
 
                     // Notificar a todos los clientes que un nuevo jugador se ha unido
                     await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
+                    //await Clients.Caller.SendAsync("RoomJoined", roomCode);
                 }
             }
         }
