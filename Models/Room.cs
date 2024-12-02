@@ -11,6 +11,9 @@ namespace QuizClash_Arena_Multimedia.Models
         public List<Player> Players { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        // Constructor sin parámetros necesario para la deserialización
+        public Room() { }
+
         /**
          * Constructor de la clase Room.
          * Inicializa las propiedades RoomCode, NumPlayers, CreatedBy, Players y CreatedAt.

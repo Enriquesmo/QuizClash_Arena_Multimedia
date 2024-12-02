@@ -2,9 +2,12 @@
 {
     public class Player
     {
-        public string name { get; set; }
+        public string Name { get; set; }
         public string Avatar { get; set; }
         public string WebSocketId { get; set; }
+
+        // Constructor sin parámetros necesario para la deserialización
+        public Player() { }
 
         /**
          * Constructor de la clase Player.
@@ -12,7 +15,7 @@
          */
         public Player(string name, string avatar, string websocket)
         {
-            this.name = name;
+            Name = name;
             Avatar = avatar;
             WebSocketId = websocket;
         }

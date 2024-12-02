@@ -21,7 +21,9 @@ namespace QuizClash_Arena_Multimedia.Hubs
         private static Dictionary<string, int> playerScores = new Dictionary<string, int>();
         private static Dictionary<string, int> voteCount = new Dictionary<string, int>();
         private static int currentRound = 0;
-        private static readonly string RoomsDirectory = Path.Combine("wwwroot", "rooms"); // Ruta de almacenamiento de salas JSON
+        //private static readonly string RoomsDirectory = Path.Combine("wwwroot", "rooms"); // Ruta de almacenamiento de salas JSON
+        private const string RoomsDirectory = "Data/Rooms";
+
 
         // ====================================================================
         // Constructor
@@ -110,25 +112,28 @@ namespace QuizClash_Arena_Multimedia.Hubs
             }
         }
 
-        public async Task JoinRoom(string roomCode, string playerName, string playerAvatar, string playerWebsocket)
+        public async Task JoinRoom(string roomCode, string playerName, string playerAvatar)
         {
-            var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
 
-            if (File.Exists(filePath))
+            if (File.Exists(roomFilePath))
             {
-                var json = await File.ReadAllTextAsync(filePath);
-                var room = JsonSerializer.Deserialize<Room>(json);
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
 
-                if (room != null)
+                if (!roomData.Players.Any(p => p.Name == playerName))
                 {
-                    var player = new Player(playerName, playerAvatar, playerWebsocket);
-                    room.Players.Add(player);
+                    var newPlayer = new Player(playerName, playerAvatar, Context.ConnectionId);
+                    roomData.Players.Add(newPlayer);
 
-                    // Guardar la sala actualizada
-                    json = JsonSerializer.Serialize(room, new JsonSerializerOptions { WriteIndented = true });
-                    await File.WriteAllTextAsync(filePath, json);
+                    // Guardar los cambios en el archivo JSON
+                    var updatedJson = JsonSerializer.Serialize(roomData, new JsonSerializerOptions { WriteIndented = true });
+                    await File.WriteAllTextAsync(roomFilePath, updatedJson);
 
+                    // Unir al jugador al grupo de SignalR
                     await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+
+                    // Notificar a todos los clientes que un nuevo jugador se ha unido
                     await Clients.Group(roomCode).SendAsync("PlayerJoined", playerName, playerAvatar);
                 }
             }

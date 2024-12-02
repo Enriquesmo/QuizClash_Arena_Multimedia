@@ -14,10 +14,10 @@
 <h2 style="text-align: center;">Jugadores en la partida:</h2>
 <p style="text-align: center;">Jugadores: <strong id="playerCount">0 / @Model.MaxPlayers</strong></p>
 <ul id="playerList" style="text-align: center;">
-    @foreach (var player in Model.Players)
+    @foreach (var player in Model.playerList)
     {
         <li>
-            <img src="@player.AvatarUrl" style="width: 50px; height: 50px;" />
+            <img src="@player.Avatar" style="width: 50px; height: 50px;" />
             @player.Name
         </li>
     }
@@ -35,15 +35,17 @@
     const playerName = "@Model.PlayerName";
     const playerAvatar = "@Model.PlayerAvatar";
     const playerSet = new Set();
-    const maxPlayers = @Model.MaxPlayers;
+    const maxPlayers = "@Model.MaxPlayers";
 
-    connection.start().then(function () {
-        console.log("Conectado al hub de SignalR");
-        if (playerName && playerAvatar) {
-            return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
-        }
-    }).then(() => {
-        if (playerName && playerAvatar) {
+    connection.start()
+        .then(function () {
+            console.log("Conexión con SignalR establecida.");
+            if (playerName && playerAvatar && !playerSet.has(playerName)) {
+                playerSet.add(playerName); // Evitar duplicados en el cliente
+                return connection.invoke("JoinRoom", roomCode, playerName, playerAvatar);
+            }
+        })
+        .then(() => {
             console.log(`Unido a la sala: ${roomCode} como ${playerName}`);
             return connection.invoke("GetPlayersInRoom", roomCode);
         }
@@ -57,18 +59,25 @@
         }
     }).catch(function (err) {
         console.error(err.toString());
-    });
+        });
+
+
+
 
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
         if (!playerSet.has(playerName)) {
+            playerSet.add(playerName);
             addPlayerToList(playerName, playerAvatar);
+
+            // Actualizar el contador de jugadores
+            document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
         }
     });
 
     function addPlayerToList(playerName, playerAvatar) {
         const playerList = document.getElementById("playerList");
-        const listItem = document.createElement("li");
 
+        const listItem = document.createElement("li");
         const avatarImg = document.createElement("img");
         avatarImg.src = playerAvatar;
         avatarImg.style.width = "50px";
@@ -77,6 +86,7 @@
         listItem.appendChild(avatarImg);
         listItem.appendChild(document.createTextNode(` ${playerName}`));
         playerList.appendChild(listItem);
+    }
 
         playerSet.add(playerName);
         document.getElementById("playerCount").innerText = `${playerSet.size} / ${maxPlayers}`;
