@@ -3,6 +3,97 @@
 @{
     ViewData["Title"] = "Sala de Espera";
 }
+<style>
+
+body {
+    background-image: url('/images/fondo_azul.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: center;
+    margin: 30px auto;
+    padding: 10px;
+    max-width: 800px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #ff6699, #ffcc00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #ffcc00;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+ul#playerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul#playerList li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+ul#playerList li img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+ul#playerList li img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(255, 255, 255, 0.4);
+}
+
+p {
+    font-size: 1.2em;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+button {
+    font-size: 1.5em;
+    padding: 10px 30px;
+    background-color: #ff6633;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #ff4500;
+    transform: scale(1.1);
+}
+</style>
+
 
 <!-- Incluir jQuery antes de SignalR -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
