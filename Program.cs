@@ -21,6 +21,8 @@ var builder = WebApplication.CreateBuilder(args);
 // ====================================================================
 
 var roomsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data", "rooms");
+var memesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data", "memes");
+
 
 if (Directory.Exists(roomsDirectory))
 {
@@ -33,6 +35,19 @@ else
 {
     Directory.CreateDirectory(roomsDirectory); // Crear la carpeta si no existe
 }
+
+if (Directory.Exists(memesDirectory))
+{
+    foreach (var file in Directory.GetFiles(memesDirectory))
+    {
+        File.Delete(file); // Eliminar cada archivo en la carpeta
+    }
+}
+else
+{
+    Directory.CreateDirectory(memesDirectory); // Crear la carpeta si no existe
+}
+
 
 // ====================================================================
 // Agregar servicios

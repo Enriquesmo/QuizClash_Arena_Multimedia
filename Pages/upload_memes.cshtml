@@ -4,103 +4,214 @@
     ViewData["Title"] = "Subir Imágenes o Videos";
 }
 
-
 <!-- Incluir jQuery antes de SignalR -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script> <!-- Asegúrate de que esta referencia sea correcta -->
 
+<style>
+    /* General */
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Arial', sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-<h1 style="text-align: center;">Sube tus Imágenes o Videos</h1>
+    .container {
+        text-align: center;
+        margin: 30px auto;
+        padding: 20px;
+        max-width: 800px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Temporizador */
+    #timer {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #ffcc00;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 10px 20px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Campo de subida de archivos */
+    input[type="file"] {
+        display: block;
+        margin: 20px auto;
+        padding: 10px;
+        font-size: 1.1rem;
+        background-color: #333;
+        color: white;
+        border: 2px dashed #ffcc00;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+        input[type="file"]:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+    /* Botón de subir */
+    button {
+        font-size: 1.5rem;
+        padding: 12px 25px;
+        background-color: #ff4500;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+        button[type="submit"]:hover {
+            background-color: #ff3366;
+            transform: scale(1.1);
+        }
+
+    /* Imágenes cargadas */
+    #uploadedMemes {
+        margin-top: 20px;
+    }
+
+        /* Alinear las imágenes horizontalmente */
+        #uploadedMemes ul {
+            display: flex; /* Flexbox para alinear horizontalmente */
+            flex-wrap: wrap; /* Permitir que las imágenes ocupen varias filas si no caben en una sola */
+            justify-content: flex-start; /* Alinear al inicio del contenedor */
+            gap: 15px; /* Espacio entre las imágenes */
+            padding: 0;
+            list-style: none;
+        }
+
+        #uploadedMemes li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #uploadedMemes img,
+        #uploadedMemes video {
+            width: 600px; /* Tamaño más grande */
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            #uploadedMemes img:hover,
+            #uploadedMemes video:hover {
+                transform: scale(1.1);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+            }
+
+    .image-preview-container {
+        margin-top: 20px;
+    }
+
+    .image-preview {
+        margin: 10px;
+        width: 100px; /* Tamaño de la vista previa */
+        height: auto;
+    }
+</style>
+
 
 <!-- Contador de tiempo -->
-<div id="timer" style="text-align: center; font-size: 24px; font-weight: bold; margin-top: 20px;">
-    01:30
-</div>
+<div class="container">
+    <h1>Sube tus Imágenes o Videos</h1>
 
-<div style="text-align: center;">
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="hidden" name="numPlayers" value="@Model.NumPlayers" /> <!-- Campo oculto para el número de jugadores -->
-        <input type="file" name="files" accept="image/*, video/*" multiple required onchange="previewFiles()" /><br /><br />
-        <button type="submit">Subir</button>
-    </form>
-</div>
+    <!-- Contador -->
+    <div id="timer"></div>
 
-<div id="uploadedMemes" style="text-align: center; margin-top: 20px;">
-    <h2>Memes subidos:</h2>
-    <ul id="memeList"></ul>
-</div>
+    <!-- Formulario para subir las imágenes -->
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="files">Seleccionar imágenes</label>
+        <input type="file" id="files" name="Files" multiple onchange="previewImage(event)" class="form-control" />
+    </div>
 
-<script src="~/lib/signalr/signalr.js"></script>
+    <div id="imagePreview" class="image-preview-container">
+        <!-- Vista previa de la imagen se mostrará aquí -->
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Subir imágenes</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
+    // Evita que el formulario se recargue
+    $('#uploadForm').on('submit', function (e) {
+        e.preventDefault(); // Evita la recarga de la página
 
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/gameHub")
-        .build();
+        const formData = new FormData(this);
 
-    connection.start().catch(err => console.error(err.toString()));
-
-    connection.on("MemeUploaded", function (playerName, memeUrl) {
-        const memeList = document.getElementById("memeList");
-        const listItem = document.createElement("li");
-        listItem.textContent = `Jugador: ${playerName}, Meme: ${memeUrl}`;
-        memeList.appendChild(listItem);
+        // Realiza la subida con AJAX
+        $.ajax({
+            url: '@Url.Page("upload_memes")', // URL de la página
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // Actualiza la lista de memes subidos después de una carga exitosa
+                updateUploadedMemes();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al subir los archivos: " + error);
+            }
+        });
     });
 
-    // Manejar el envío del formulario con AJAX
-    document.getElementById("uploadForm").onsubmit = async (e) => {
-        e.preventDefault(); // Evitar la recarga de la página
-        const formData = new FormData(e.target);
-
-        const response = await fetch("/upload_memes", {
-            method: "POST",
-            body: formData
+    // Función para actualizar la lista de memes subidos
+    function updateUploadedMemes() {
+        $.get('@Url.Page("upload_memes")', function (data) {
+            // Actualiza las imágenes sin recargar la página
+            const memeList = $(data).find('#uploadedMemes ul');
+            $('#uploadedMemes ul').html(memeList.html());
         });
-
-        const data = await response.json(); // Esperar la respuesta en formato JSON
-        if (data.success) {
-            const memeList = document.getElementById("memeList");
-            const listItem = document.createElement("li");
-            listItem.textContent = `Jugador: ${data.playerName}, Meme: ${data.memeUrl}`; // Usar los datos devueltos
-            memeList.appendChild(listItem);
-        } else {
-            console.error("Error al subir el meme");
-        }
-    };
+    }
 
     // Función para previsualizar los archivos seleccionados
-    function previewFiles() {
-        const fileList = document.querySelector('input[type="file"]').files;
-        const previewContainer = document.getElementById("uploadedMemes");
+    function previewImage(event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById("imagePreview");
+        previewContainer.innerHTML = '';  // Limpia cualquier vista previa anterior
 
-        // Crear una lista de archivos previsualizados sin eliminar los anteriores
-        const newPreviewList = document.createElement("ul");
-        for (let i = 0; i < fileList.length; i++) {
-            const file = fileList[i];
-            const listItem = document.createElement("li");
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
 
-            // Si es una imagen
-            if (file.type.startsWith("image/")) {
+            reader.onload = function (e) {
                 const img = document.createElement("img");
-                img.src = URL.createObjectURL(file);
-                img.style.width = "100px";
-                img.style.height = "100px";
-                listItem.appendChild(img);
-            }
-            // Si es un video
-            else if (file.type.startsWith("video/")) {
-                const video = document.createElement("video");
-                video.src = URL.createObjectURL(file);
-                video.style.width = "100px";
-                video.style.height = "100px";
-                video.controls = true;
-                listItem.appendChild(video);
-            }
+                img.src = e.target.result;
+                img.classList.add("image-preview");
+                previewContainer.appendChild(img);
+            };
 
-            newPreviewList.appendChild(listItem);
+            reader.readAsDataURL(file);
         }
-
-        // Mostrar las previsualizaciones sin borrar las anteriores
-        previewContainer.appendChild(newPreviewList);
     }
 
     // Contador de tiempo (1 minuto y 30 segundos)
