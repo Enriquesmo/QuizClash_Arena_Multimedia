@@ -4,39 +4,171 @@
     ViewData["Title"] = "Unirse a una Partida";
 }
 
-<h1 style="text-align: center;">Unirse a una Partida</h1>
+<style>
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-<div style="text-align: center;">
+    .container {
+        text-align: center;
+        margin: 30px auto; /* Reduce el margen superior e inferior */
+        padding: 10px;
+        max-width: 800px; /* Aumenta el ancho máximo */
+        height: auto; /* Ajusta automáticamente la altura */
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        overflow-y: auto; /* Agrega scroll interno si el contenido excede */
+    }
+
+    h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    form label {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #ffcc00;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    form input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        font-size: 1.2em;
+        color: #333;
+        border: 2px solid #ffcc00;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    }
+
+        form input[type="text"]:focus {
+            outline: none;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 204, 0, 0.7);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+    .avatar-selection {
+        display: flex;
+        justify-content: center; /* Centra los avatares horizontalmente */
+        gap: 10px; /* Reduce el espacio entre los avatares */
+        flex-wrap: nowrap; /* Evita que se envuelvan en filas */
+        overflow-x: auto; /* Agrega desplazamiento horizontal si los avatares exceden el ancho del contenedor */
+        padding: 10px 0; /* Agrega un poco de espacio arriba y abajo */
+    }
+
+    .avatar-option {
+        position: relative;
+        width: 80px; /* Tamaño de los avatares */
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 3px solid transparent; /* Sin borde al principio */
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    }
+
+        .avatar-option img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.1); /* Efecto al pasar el mouse */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .avatar-option.selected {
+            border-color: #ffcc00; /* Resalta el avatar seleccionado */
+            background-color: rgba(255, 204, 0, 0.2);
+        }
+
+            .avatar-option.selected::after {
+                content: '✔';
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                background: #ffcc00;
+                color: black;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 50%;
+                padding: 5px;
+            }
+
+    form button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #ff6633;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        margin-top: 20px;
+    }
+
+        form button:hover {
+            background-color: #ff4500;
+            transform: scale(1.1);
+        }
+</style>
+
+
+
+
+<div class="container">
+    <h1>Unirse a una Partida</h1>
+
     <form method="post" asp-page-handler="JoinGame">
         <label for="roomCode">Código de la Sala:</label>
-        <input type="text" id="roomCode" name="roomCode" required />
-        <br /><br />
+        <input type="text" id="roomCode" name="roomCode" required placeholder="Introduce el código" />
+
         <label for="playerName">Nombre del Jugador:</label>
-        <input type="text" id="playerName" name="playerName" placeholder="Introduce tu nombre" required>
-        <br /><br />
-        <label for="playerAvatar">Avatar del Jugador:</label>
-        <select id="playerAvatar" name="playerAvatar" required>
-            <option value="/images/avatars/avatar_1.png">Avatar 1</option>
-            <option value="/images/avatars/avatar_2.png">Avatar 2</option>
-            <option value="/images/avatars/avatar_3.png">Avatar 3</option>
-            <option value="/images/avatars/avatar_4.png">Avatar 4</option>
-            <option value="/images/avatars/avatar_5.png">Avatar 5</option>
-            <option value="/images/avatars/avatar_6.png">Avatar 6</option>
-            <option value="/images/avatars/avatar_7.png">Avatar 7</option>
-            <option value="/images/avatars/avatar_8.png">Avatar 8</option>
-        </select>
-        <br /><br />
+        <input type="text" id="playerName" name="playerName" placeholder="Introduce tu nombre" required />
+
+        <label>Selecciona tu Avatar:</label>
+        <div class="avatar-selection" id="avatarSelection">
+            @for (int i = 1; i <= 8; i++)
+            {
+                <div class="avatar-option" data-avatar="@Url.Content($"/images/avatars/avatar_{i}.png")">
+                    <img src="@Url.Content($"/images/avatars/avatar_{i}.png")" alt="Avatar @i">
+                </div>
+            }
+        </div>
+        <input type="hidden" id="playerAvatar" name="playerAvatar" required>
         <input type="hidden" id="webSocketId" name="WebSocketId" />
+
         <div id="avatarPreview" style="margin-top: 10px;">
             <img id="avatarImage" src="" alt="Vista previa del avatar" style="display: none; width: 100px; height: 100px;" />
         </div>
-        <br /><br />
+
         <button type="submit" style="font-size: 20px; padding: 10px 20px;">Unirse</button>
     </form>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 <script>
+    // Configuración de SignalR para obtener el WebSocket ID
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/gameHub")
         .build();
@@ -46,13 +178,23 @@
             document.getElementById("webSocketId").value = connectionId;
         });
     }).catch(function (err) {
-        return console.error(err.toString());
+        console.error(err.toString());
     });
 
-    document.getElementById('playerAvatar').addEventListener('change', function (event) {
-        const selectedAvatar = event.target.value;
-        const avatarImage = document.getElementById('avatarImage');
-        avatarImage.src = selectedAvatar;
-        avatarImage.style.display = 'block';
+    // Selección de avatar
+    document.querySelectorAll('.avatar-option').forEach(option => {
+        option.addEventListener('click', function () {
+            // Quitar selección de todos los avatares
+            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+            // Marcar el avatar seleccionado
+            this.classList.add('selected');
+
+            // Actualizar el campo oculto con la URL del avatar seleccionado
+            const avatarUrl = this.getAttribute('data-avatar');
+            document.getElementById('playerAvatar').value = avatarUrl;
+
+            // Ya no necesitamos mostrar la vista previa, por lo que eliminamos esa parte.
+        });
     });
-</script>
+
+ </script>
