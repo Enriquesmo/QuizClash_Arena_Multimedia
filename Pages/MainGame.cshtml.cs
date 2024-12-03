@@ -1,49 +1,74 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using System.IO;
-using QuizClash_Arena_Multimedia.Models;
+using System.Linq;
 
 namespace QuizClash_Arena_Multimedia.Pages
 {
     public class MainGameModel : PageModel
     {
-        public Player CurrentPlayer { get; private set; }
         public string RandomMemePath { get; private set; }
+        [BindProperty]
+        public string UserText { get; set; } // Propiedad para almacenar el texto ingresado por el usuario
 
-        public void OnGet(string playerId, string roomCode)
+        public void OnGet(string roomCode)
         {
-            string roomFilePath = Path.Combine("data", "rooms", $"{roomCode}.json");
-            if (!System.IO.File.Exists(roomFilePath))
+            LoadRandomMeme();
+        }
+
+        public void OnPost()
+        {
+            // Aquí puedes manejar el texto ingresado por el usuario
+            // Puedes guardarlo, mostrarlo o realizar alguna otra acción con él
+            if (!string.IsNullOrEmpty(UserText))
             {
-                throw new FileNotFoundException("La sala no existe.");
+                // Puedes imprimir el texto o procesarlo de alguna manera
+                // Por ejemplo, mostrarlo en la consola
+                Console.WriteLine("Texto ingresado por el usuario: " + UserText);
             }
 
-            string roomJson = System.IO.File.ReadAllText(roomFilePath);
-            Room room = JsonConvert.DeserializeObject<Room>(roomJson);
+            // Volver a cargar un meme aleatorio después de enviar el formulario
+            LoadRandomMeme();
+        }
 
-            CurrentPlayer = room.Players.FirstOrDefault(p => p.WebSocketId == playerId) ?? room.CreatedBy;
+        private void LoadRandomMeme()
+        {
+            var memesPath = Path.Combine("wwwroot", "Memes");
+            var repeatedMemesPath = Path.Combine("wwwroot", "memes_repetidos");
+            var memes = new List<string>();
 
-            Random random = new Random();
-            var memes = Directory.GetFiles("data/Memes", "*.png")
-                                 .Concat(Directory.GetFiles("data/memes_repetidos", "*.png"))
-                                 .ToList();
+            if (Directory.Exists(memesPath))
+            {
+                memes.AddRange(Directory.GetFiles(memesPath, "*.png"));
+                memes.AddRange(Directory.GetFiles(memesPath, "*.jpeg"));
+                memes.AddRange(Directory.GetFiles(memesPath, "*.jpg"));
+            }
+
+            if (Directory.Exists(repeatedMemesPath))
+            {
+                memes.AddRange(Directory.GetFiles(repeatedMemesPath, "*.png"));
+                memes.AddRange(Directory.GetFiles(repeatedMemesPath, "*.jpeg"));
+                memes.AddRange(Directory.GetFiles(repeatedMemesPath, "*.jpg"));
+            }
 
             if (memes.Any())
             {
-                RandomMemePath = memes[random.Next(memes.Count)];
+                Random random = new Random();
+                var selectedMeme = memes[random.Next(memes.Count)];
+
+                if (selectedMeme.StartsWith(memesPath))
+                {
+                    RandomMemePath = "/Memes/" + Path.GetFileName(selectedMeme);
+                }
+                else if (selectedMeme.StartsWith(repeatedMemesPath))
+                {
+                    RandomMemePath = "/memes_repetidos/" + Path.GetFileName(selectedMeme);
+                }
             }
             else
             {
-                RandomMemePath = "/images/default.png"; // Ruta de una imagen predeterminada
+                RandomMemePath = "/images/fotos_token/1.jpeg";
             }
-        }
-
-        public IActionResult OnPost(string userText, string playerId, string roomCode)
-        {
-            // Aquí puedes manejar el texto ingresado por el usuario
-            // Ejemplo: Guardarlo en una base de datos o procesarlo.
-            return RedirectToPage("/MainGame", new { playerId, roomCode });
         }
     }
 }

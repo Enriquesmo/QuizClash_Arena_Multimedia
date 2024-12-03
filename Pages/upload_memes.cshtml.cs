@@ -40,7 +40,7 @@ namespace QuizClash_Arena_Multimedia.Pages
         public async Task<IActionResult> OnPostAsync()
         {
             // Establece el directorio de destino
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Memes");
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Memes");
             try
             {
                 foreach (var file in Files)

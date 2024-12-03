@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Data\memes_repetidos\reposteria_Ana.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Twitch" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
@@ -24,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Memes\" />
+    <Folder Include="wwwroot\Data\" />
+    <Folder Include="wwwroot\Memes\" />
     <Folder Include="Data\Rooms\" />
     <Folder Include="wwwroot\images\Memes\" />
     <Folder Include="wwwroot\rooms\" />
@@ -32,6 +29,44 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\memes_repetidos\1.png" />
+    <None Include="wwwroot\memes_repetidos\10.png" />
+    <None Include="wwwroot\memes_repetidos\11.png" />
+    <None Include="wwwroot\memes_repetidos\12.png" />
+    <None Include="wwwroot\memes_repetidos\13.png" />
+    <None Include="wwwroot\memes_repetidos\14.png" />
+    <None Include="wwwroot\memes_repetidos\15.png" />
+    <None Include="wwwroot\memes_repetidos\16.jpeg" />
+    <None Include="wwwroot\memes_repetidos\17.jpeg" />
+    <None Include="wwwroot\memes_repetidos\18.jpeg" />
+    <None Include="wwwroot\memes_repetidos\19.jpeg" />
+    <None Include="wwwroot\memes_repetidos\2.png" />
+    <None Include="wwwroot\memes_repetidos\20.jpeg" />
+    <None Include="wwwroot\memes_repetidos\21.jpeg" />
+    <None Include="wwwroot\memes_repetidos\22.jpeg" />
+    <None Include="wwwroot\memes_repetidos\23.jpeg" />
+    <None Include="wwwroot\memes_repetidos\24.jpeg" />
+    <None Include="wwwroot\memes_repetidos\25.jpeg" />
+    <None Include="wwwroot\memes_repetidos\26.jpeg" />
+    <None Include="wwwroot\memes_repetidos\27.jpeg" />
+    <None Include="wwwroot\memes_repetidos\28.jpeg" />
+    <None Include="wwwroot\memes_repetidos\29.jpeg" />
+    <None Include="wwwroot\memes_repetidos\3.png" />
+    <None Include="wwwroot\memes_repetidos\30.jpeg" />
+    <None Include="wwwroot\memes_repetidos\31.jpeg" />
+    <None Include="wwwroot\memes_repetidos\32.jpeg" />
+    <None Include="wwwroot\memes_repetidos\33.jpeg" />
+    <None Include="wwwroot\memes_repetidos\34.jpeg" />
+    <None Include="wwwroot\memes_repetidos\35.jpeg" />
+    <None Include="wwwroot\memes_repetidos\36.jpeg" />
+    <None Include="wwwroot\memes_repetidos\37.jpeg" />
+    <None Include="wwwroot\memes_repetidos\4.png" />
+    <None Include="wwwroot\memes_repetidos\5.png" />
+    <None Include="wwwroot\memes_repetidos\6.png" />
+    <None Include="wwwroot\memes_repetidos\7.png" />
+    <None Include="wwwroot\memes_repetidos\8.png" />
+    <None Include="wwwroot\memes_repetidos\9.png" />
+    <None Include="wwwroot\memes_repetidos\reposteria_Ana.png" />
     <None Include="wwwroot\images\avatars\avatar_1.png" />
     <None Include="wwwroot\images\avatars\avatar_2.png" />
     <None Include="wwwroot\images\avatars\avatar_3.png" />

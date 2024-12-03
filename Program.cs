@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ====================================================================
 
 var roomsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data", "rooms");
-var memesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data", "memes");
+var memesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "memes");
 
 
 if (Directory.Exists(roomsDirectory))

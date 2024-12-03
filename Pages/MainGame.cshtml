@@ -1,22 +1,130 @@
 ﻿@page
 @model QuizClash_Arena_Multimedia.Pages.MainGameModel
 @{
-    ViewData["Title"] = "Main Game";
+    ViewData["Title"] = "Meme Aleatorio";
 }
+<style>
+    /* General Styles */
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
 
-<div style="position: absolute; top: 10px; right: 10px; text-align: right;">
-    <img src="@Model.CurrentPlayer.Avatar" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
-    <p>@Model.CurrentPlayer.Name</p>
+    /* Contenedor principal */
+    .main-container {
+        text-align: center;
+        margin: 30px auto;
+        padding: 10px;
+        max-width: 1150px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Estilo del título */
+    h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Contenedor de la imagen de meme */
+    .meme-container {
+        margin-bottom: 30px;
+    }
+
+    .random-meme {
+        max-width: 80%;
+        max-height: 400px;
+        border: 1px solid #ccc;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .random-meme:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+        }
+
+    /* Estilo del formulario */
+    .text-entry-container {
+        background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco translúcido */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .form-label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        resize: none;
+        transition: border-color 0.3s;
+    }
+
+        .form-textarea:focus {
+            border-color: #ffcc00;
+            outline: none;
+        }
+
+    .submit-button {
+        padding: 12px 20px;
+        font-size: 16px;
+        background-color: #ff6633; /* Color naranja */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+        background-color: #ff4500;
+        transform: scale(1.1);
+
+        .submit-button:focus {
+            outline: none;
+        }
+</style>
+
+<div class="main-container">
+    <h1>Meme Aleatorio</h1>
+    <div class="meme-container">
+        <p>@Model.RandomMemePath</p> <!-- Esto imprime la ruta generada -->
+        <img src="@Model.RandomMemePath" alt="Meme" class="random-meme">
+    </div>
+
+    <!-- Formulario para ingresar texto -->
+    <div class="text-entry-container">
+        <form method="post">
+            <label for="userText" class="form-label">Escribe tu texto:</label>
+            <textarea id="userText" name="userText" class="form-textarea" rows="4" placeholder="Escribe algo..."></textarea>
+            <button type="submit" class="submit-button">Enviar</button>
+        </form>
+    </div>
 </div>
-
-<h1>Escribe un texto para el meme</h1>
-
-<div style="text-align: center; margin-top: 20px;">
-    <img src="@Model.RandomMemePath" alt="Meme" style="max-width: 80%; max-height: 400px; border: 1px solid #ccc;">
-</div>
-
-<form method="post" style="margin-top: 20px; text-align: center;">
-    <textarea name="userText" placeholder="Escribe tu texto aquí" style="width: 80%; height: 100px; resize: none;"></textarea>
-    <br>
-    <button type="submit" style="margin-top: 10px;">Enviar</button>
-</form>

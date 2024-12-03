@@ -159,8 +159,20 @@
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Botón de redirección a MainGame -->
+    <div class="mt-4">
+        <button id="playGameButton" class="btn btn-success">¡Vamos a jugar ya!</button>
+    </div>
+
+    <script>
+        // Redirige al archivo MainGame.cshtml al hacer clic en el botón
+        document.getElementById("playGameButton").addEventListener("click", function () {
+            window.location.href = '@Url.Page("MainGame")';
+        });
+    </script>
 
 <script>
+
     // Evita que el formulario se recargue
     $('#uploadForm').on('submit', function (e) {
         e.preventDefault(); // Evita la recarga de la página
