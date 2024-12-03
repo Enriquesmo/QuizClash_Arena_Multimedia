@@ -10,12 +10,18 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string RandomMemePath { get; private set; }
         [BindProperty]
         public string UserText { get; set; } // Propiedad para almacenar el texto ingresado por el usuario
+        public string RoomCode { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerAvatar { get; set; }
 
-        public void OnGet(string roomCode)
+        public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
+            RoomCode = roomCode;
+            PlayerName = playerName;
+            PlayerAvatar = playerAvatar;
             LoadRandomMeme();
+            // Puedes procesar estos valores o utilizarlos en la vista.
         }
-
         public void OnPost()
         {
             // Aquí puedes manejar el texto ingresado por el usuario
