@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using QuizClash_Arena_Multimedia.Models;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace QuizClash_Arena_Multimedia.Pages
 {
@@ -13,15 +15,23 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string RoomCode { get; set; }
         public string PlayerName { get; set; }
         public string PlayerAvatar { get; set; }
+        public Room CurrentRoom { get; set; }
 
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
             RoomCode = roomCode;
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;
-            LoadRandomMeme();
+            LoadRoomFromJson(roomCode);
+
+            if (IsRoomCreator() && !CurrentRoom.Rounds.Any())
+            {
+                CreateRounds();
+                SaveRoomToJson();
+            }
             // Puedes procesar estos valores o utilizarlos en la vista.
         }
+
         public void OnPost()
         {
             // Aquí puedes manejar el texto ingresado por el usuario
@@ -37,7 +47,44 @@ namespace QuizClash_Arena_Multimedia.Pages
             LoadRandomMeme();
         }
 
-        private void LoadRandomMeme()
+        private void LoadRoomFromJson(string roomCode)
+        {
+            var filePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
+            if (System.IO.File.Exists(filePath))
+            {
+                var json = System.IO.File.ReadAllText(filePath);
+                CurrentRoom = JsonSerializer.Deserialize<Room>(json);
+            }
+            else
+            {
+                CurrentRoom = new Room(roomCode, 1, new Player { Name = PlayerName, Avatar = PlayerAvatar });
+            }
+        }
+
+        private void SaveRoomToJson()
+        {
+            var filePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");
+            var json = JsonSerializer.Serialize(CurrentRoom, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(filePath, json);
+        }
+
+        private void CreateRounds()
+        {
+            var memes = LoadMemes();
+            Random random = new Random();
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (memes.Any())
+                {
+                    var selectedMeme = memes[random.Next(memes.Count)];
+                    var memePath = selectedMeme.StartsWith("wwwroot/Memes") ? "/Memes/" + Path.GetFileName(selectedMeme) : "/memes_repetidos/" + Path.GetFileName(selectedMeme);
+                    CurrentRoom.Rounds.Add(new Round(memePath));
+                }
+            }
+        }
+
+        private List<string> LoadMemes()
         {
             var memesPath = Path.Combine("wwwroot", "Memes");
             var repeatedMemesPath = Path.Combine("wwwroot", "memes_repetidos");
@@ -57,16 +104,23 @@ namespace QuizClash_Arena_Multimedia.Pages
                 memes.AddRange(Directory.GetFiles(repeatedMemesPath, "*.jpg"));
             }
 
+            return memes;
+        }
+
+        private void LoadRandomMeme()
+        {
+            var memes = LoadMemes();
+
             if (memes.Any())
             {
                 Random random = new Random();
                 var selectedMeme = memes[random.Next(memes.Count)];
 
-                if (selectedMeme.StartsWith(memesPath))
+                if (selectedMeme.StartsWith("wwwroot/Memes"))
                 {
                     RandomMemePath = "/Memes/" + Path.GetFileName(selectedMeme);
                 }
-                else if (selectedMeme.StartsWith(repeatedMemesPath))
+                else if (selectedMeme.StartsWith("wwwroot/memes_repetidos"))
                 {
                     RandomMemePath = "/memes_repetidos/" + Path.GetFileName(selectedMeme);
                 }
@@ -75,6 +129,11 @@ namespace QuizClash_Arena_Multimedia.Pages
             {
                 RandomMemePath = "/images/fotos_token/1.jpeg";
             }
+        }
+
+        private bool IsRoomCreator()
+        {
+            return CurrentRoom.CreatedBy.Name == PlayerName && CurrentRoom.CreatedBy.Avatar == PlayerAvatar;
         }
     }
 }

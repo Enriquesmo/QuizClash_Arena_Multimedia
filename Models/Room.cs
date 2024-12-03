@@ -11,8 +11,14 @@ namespace QuizClash_Arena_Multimedia.Models
         public List<Player> Players { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        // Variables para las rondas de juego
+        public List<Round> Rounds { get; set; }
+
         // Constructor sin parámetros necesario para la deserialización
-        public Room() { }
+        public Room()
+        {
+            Rounds = new List<Round>();
+        }
 
         /**
          * Constructor de la clase Room.
@@ -25,6 +31,25 @@ namespace QuizClash_Arena_Multimedia.Models
             CreatedBy = createdBy;
             Players = new List<Player>();
             CreatedAt = DateTime.Now;
+            Rounds = new List<Round>();
         }
+    }
+
+    public class Round
+    {
+        public string MemePath { get; set; }
+        public List<Respuesta> Answers { get; set; }
+
+        public Round(string memepath)
+        {
+            MemePath = memepath;
+            Answers = new List<Respuesta>();
+        }
+    }
+
+    public class Respuesta
+    {
+        public string PlayerName { get; set; }
+        public string Response { get; set; }
     }
 }
