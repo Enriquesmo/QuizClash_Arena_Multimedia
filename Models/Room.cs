@@ -13,6 +13,7 @@ namespace QuizClash_Arena_Multimedia.Models
 
         // Variables para las rondas de juego
         public List<Round> Rounds { get; set; }
+        public bool GameStarted { get; set; }
 
         // Constructor sin parámetros necesario para la deserialización
         public Room()
@@ -32,6 +33,7 @@ namespace QuizClash_Arena_Multimedia.Models
             Players = new List<Player>();
             CreatedAt = DateTime.Now;
             Rounds = new List<Round>();
+            GameStarted = false;
         }
     }
 
@@ -45,11 +47,13 @@ namespace QuizClash_Arena_Multimedia.Models
             MemePath = memepath;
             Answers = new List<Respuesta>();
         }
+
     }
 
     public class Respuesta
     {
         public string PlayerName { get; set; }
         public string Response { get; set; }
+        public int votos { get; set; }
     }
 }

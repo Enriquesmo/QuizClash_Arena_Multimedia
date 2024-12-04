@@ -140,6 +140,33 @@ namespace QuizClash_Arena_Multimedia.Hubs
             }
         }
 
+        public async Task StartGame(string roomCode)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                roomData.GameStarted = true;
+                var updatedJson = JsonSerializer.Serialize(roomData, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(roomFilePath, updatedJson);
+            }
+        }
+
+
+        public async Task<bool> IsGameStarted(string roomCode)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                return roomData?.GameStarted ?? false;
+            }
+            return false;
+        }
 
         public async Task<List<Player>> GetPlayersInRoom(string roomCode)
         {
@@ -194,13 +221,13 @@ namespace QuizClash_Arena_Multimedia.Hubs
         /**
          * Inicia el juego, resetea las puntuaciones y los votos, y notifica a los jugadores.
          */
-        public async Task StartGame(int numPlayers)
+        /*public async Task StartGame(int numPlayers)
         {
             currentRound = 1;
             playerScores.Clear();
             voteCount.Clear();
             await Clients.All.SendAsync("GameStarted", numPlayers);
-        }
+        }*/
 
         /**
          * Sube un meme para un jugador y notifica a los jugadores.

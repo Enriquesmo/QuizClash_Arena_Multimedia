@@ -11,7 +11,7 @@ namespace QuizClash_Arena_Multimedia.Pages
     {
         public string RandomMemePath { get; private set; }
         [BindProperty]
-        public string UserText { get; set; } // Propiedad para almacenar el texto ingresado por el usuario
+        public string UserText { get; set; }
         public string RoomCode { get; set; }
         public string PlayerName { get; set; }
         public string PlayerAvatar { get; set; }

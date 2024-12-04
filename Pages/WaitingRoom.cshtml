@@ -4,7 +4,6 @@
     ViewData["Title"] = "Sala de Espera";
 }
 <style>
-
     body {
         background-image: url('/images/fondo_azul.png');
         background-size: cover;
@@ -94,7 +93,6 @@
         }
 </style>
 
-
 <!-- Incluir jQuery antes de SignalR -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
@@ -115,14 +113,13 @@
 </ul>
 
 <div style="text-align: center;">
-    <form method="get" asp-page="upload_memes">
+    <form method="get" asp-page="upload_memes" onsubmit="startGame(event)">
         <input type="hidden" name="roomCode" value="@Model.RoomCode" />
         <input type="hidden" name="playerName" value="@Model.PlayerName" />
         <input type="hidden" name="playerAvatar" value="@Model.PlayerAvatar" />
-        <button type="submit">Iniciar Juego</button>
+        <button type="submit" @(Model.CurrentRoom.CreatedBy.Name == Model.PlayerName ? "" : "disabled")>Iniciar Juego</button>
     </form>
 </div>
-
 
 <script>
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
@@ -187,6 +184,31 @@
         });
     }
 
+    function startGame(event) {
+        event.preventDefault();
+        connection.invoke("StartGame", roomCode).then(() => {
+            console.log("Juego iniciado");
+            document.querySelector("form").submit();
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    }
+
+    function checkGameStarted() {
+        connection.invoke("IsGameStarted", roomCode).then(isStarted => {
+            if (isStarted) {
+                window.location.href = `upload_memes?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+            }
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    }
+
     // Recargar la lista de jugadores cada 5 segundos
     setInterval(updatePlayerList, 5000);
+
+    // Comprobar si el juego ha comenzado cada 5 segundos
+    if (playerName !== "@Model.CurrentRoom.CreatedBy.Name") {
+        setInterval(checkGameStarted, 3000);
+    }
 </script>

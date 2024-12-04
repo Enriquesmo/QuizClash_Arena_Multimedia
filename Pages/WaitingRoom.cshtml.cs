@@ -13,6 +13,7 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string PlayerAvatar { get; set; }
         public int MaxPlayers { get; set; }
         public List<Player> playerList { get; set; }
+        public Room CurrentRoom { get; set; }
 
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
@@ -30,13 +31,19 @@ namespace QuizClash_Arena_Multimedia.Pages
                 var roomData = JsonSerializer.Deserialize<Room>(roomJson);
                 MaxPlayers = roomData?.NumPlayers ?? 0;
                 playerList = roomData?.Players ?? new List<Player>();
+                CurrentRoom = roomData;
             }
             else
             {
                 MaxPlayers = 0;
                 playerList = new List<Player>();
+                CurrentRoom = new Room(roomCode, 1, new Player { Name = PlayerName, Avatar = PlayerAvatar });
             }
+        }
 
+        private bool IsRoomCreator()
+        {
+            return CurrentRoom.CreatedBy.Name == PlayerName && CurrentRoom.CreatedBy.Avatar == PlayerAvatar;
         }
     }
 }
