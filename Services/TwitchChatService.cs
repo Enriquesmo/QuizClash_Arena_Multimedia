@@ -1,70 +1,94 @@
-﻿namespace QuizClash_Arena_Multimedia.Services
+﻿using TwitchLib.Client;
+using TwitchLib.Client.Models;
+using TwitchLib.Client.Events;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.Json;
+
+public class TwitchChatService
 {
-    using TwitchLib.Client;
-    using TwitchLib.Client.Models;
-    using TwitchLib.Client.Events;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    private readonly TwitchClient _client;
+    private int _votesJ1 = 0;
+    private int _votesJ2 = 0;
+    private readonly string _broadcasterId;
+    private readonly string _clientId;
+    private readonly string _accessToken;
 
-    public class TwitchChatService
+    public TwitchChatService(string accessToken, string broadcasterId, string clientId)
     {
-        private readonly TwitchClient _twitchClient;
-        private readonly Dictionary<string, int> _commentsCount;
+        _accessToken = accessToken;
+        _broadcasterId = broadcasterId;
+        _clientId = clientId;
 
-        public TwitchChatService()
+        // Obtener el nombre de usuario usando el broadcasterId
+        var username = GetUsernameFromBroadcasterId(broadcasterId, accessToken, clientId).Result;
+
+        // Configurar credenciales y cliente
+        var credentials = new ConnectionCredentials(username, accessToken);
+        _client = new TwitchClient();
+        _client.Initialize(credentials, username);
+
+        // Suscribirse al evento de recibir mensajes
+        _client.OnMessageReceived += Client_OnMessageReceived;
+    }
+
+    // Evento de mensaje recibido
+    private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
+    {
+        var message = e.ChatMessage.Message.ToLower();
+        if (message.Contains("j1")) _votesJ1++;
+        else if (message.Contains("j2")) _votesJ2++;
+    }
+
+    // Iniciar votación
+    public async Task StartVotingAsync()
+    {
+        try
         {
-            _commentsCount = new Dictionary<string, int>();
+            _client.Connect();
+            _client.SendMessage(_client.JoinedChannels[0], "¡Inicia la votación! Escribe 'j1' o 'j2' para votar.");
 
-            var credentials = new ConnectionCredentials("your_twitch_bot_username", "your_twitch_oauth_token");
-            _twitchClient = new TwitchClient();
-            _twitchClient.Initialize(credentials, "your_twitch_channel_name");
+            // Esperar 30 segundos
+            await Task.Delay(30000);
 
-            _twitchClient.OnMessageReceived += OnMessageReceived;
+            // Finalizar votación y enviar resultados
+            _client.SendMessage(_client.JoinedChannels[0], $"Votación finalizada: J1 = {_votesJ1}, J2 = {_votesJ2}");
+
+            // Determinar el ganador
+            var winner = _votesJ1 > _votesJ2 ? "J1" : _votesJ1 < _votesJ2 ? "J2" : "Empate";
+            _client.SendMessage(_client.JoinedChannels[0], $"Resultado: {winner}");
+
         }
-
-        // Método para empezar a escuchar el chat
-        public void StartListening()
+        catch (Exception ex)
         {
-            _twitchClient.Connect();
+            Console.WriteLine($"Error durante la votación: {ex.Message}");
         }
-
-        // Método para detener la escucha
-        public void StopListening()
+        finally
         {
-            _twitchClient.Disconnect();
-        }
-
-        // Evento que se dispara cuando se recibe un mensaje
-        private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
-        {
-            // Asegúrate de que el mensaje no sea un bot
-            if (e.ChatMessage.Username != "your_twitch_bot_username")
-            {
-                // Filtra los mensajes de jugador1 y jugador2
-                if (e.ChatMessage.Username == "jugador1" || e.ChatMessage.Username == "jugador2")
-                {
-                    if (_commentsCount.ContainsKey(e.ChatMessage.Message))
-                    {
-                        _commentsCount[e.ChatMessage.Message]++;
-                    }
-                    else
-                    {
-                        _commentsCount[e.ChatMessage.Message] = 1;
-                    }
-                }
-            }
-        }
-
-        // Método para obtener el comentario más frecuente
-        public string GetMostFrequentComment()
-        {
-            if (_commentsCount.Count == 0)
-                return "No se recibieron comentarios.";
-
-            var mostFrequent = _commentsCount.OrderByDescending(x => x.Value).First();
-            return $"El comentario más frecuente fue: \"{mostFrequent.Key}\" con {mostFrequent.Value} menciones.";
+            _client.Disconnect();
         }
     }
 
+    // Obtener nombre de usuario desde la API de Twitch
+    private async Task<string> GetUsernameFromBroadcasterId(string broadcasterId, string accessToken, string clientId)
+    {
+        try
+        {
+            var url = $"https://api.twitch.tv/helix/users?id={broadcasterId}";
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            client.DefaultRequestHeaders.Add("Client-Id", clientId);
+
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var userData = JsonDocument.Parse(responseBody);
+            return userData.RootElement.GetProperty("data")[0].GetProperty("login").GetString();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error obteniendo el nombre de usuario desde Twitch.", ex);
+        }
+    }
 }

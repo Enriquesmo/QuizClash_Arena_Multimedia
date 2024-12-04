@@ -75,7 +75,8 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("user:edit:broadcast");
     options.Scope.Add("channel:manage:broadcast");
     options.Scope.Add("channel:read:stream_key");
-
+    options.Scope.Add("chat:read");
+    options.Scope.Add("chat:edit");
     options.SaveTokens = true;
 
     options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");  // Mapeamos el ID
@@ -252,7 +253,29 @@ app.MapGet("/prueba2", async (HttpContext context) =>
     });
 });
 
+app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory clientFactory) =>
+{
+    var accessToken = context.Request.Cookies["access_token"];
+    var broadcasterId = context.Request.Cookies["brodcasterId"];
+    var clientId = builder.Configuration["Twitch:ClientId"]; // El ClientId lo tienes en tu configuración
 
+    if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(broadcasterId) || string.IsNullOrEmpty(clientId))
+    {
+        return Results.BadRequest("No se encuentran los datos necesarios.");
+    }
+
+    try
+    {
+        // Crear el servicio de chat con la información obtenida
+        var chatService = new TwitchChatService(accessToken, broadcasterId, clientId);
+        chatService.StartVotingAsync();
+        return Results.Ok("Poll started, check console for results.");
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest($"Error al conectar con el chat: {ex.Message}");
+    }
+});
 // Ejecutar la aplicación
 app.Run();
 
