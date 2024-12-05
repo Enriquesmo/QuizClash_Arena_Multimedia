@@ -8,12 +8,16 @@ using QuizClash_Arena_Multimedia.Hubs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+
 namespace QuizClash_Arena_Multimedia.Pages
 {
     public class upload_memesModel : PageModel
     {
         private readonly IHubContext<GameHub> _hubContext;
         private readonly IHostApplicationLifetime _applicationLifetime;
+        public string RoomCode { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerAvatar { get; set; }
         public List<string> UploadedMemes { get; set; } = new List<string>();
 
 
@@ -28,12 +32,15 @@ namespace QuizClash_Arena_Multimedia.Pages
             _applicationLifetime = applicationLifetime;
         }
 
-      
 
-        // Captura el número de jugadores al cargar la página
-        public void OnGet(int numPlayers)
+
+        public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
-            NumPlayers = numPlayers;
+            RoomCode = roomCode;
+            PlayerName = playerName;
+            PlayerAvatar = playerAvatar;
+
+            // Aquí puedes procesar los datos según sea necesario.
         }
 
         // Método POST para manejar la subida de archivos

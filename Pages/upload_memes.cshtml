@@ -156,7 +156,12 @@
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Subir imágenes</button>
-</form>
+    </form>
+    <div>
+        <p><strong>Código de la Sala:</strong> @Model.RoomCode</p>
+        <p><strong>Nombre del Jugador:</strong> @Model.PlayerName</p>
+        <p><strong>Avatar del Jugador:</strong> <img src="@Model.PlayerAvatar" style="width: 50px; height: 50px;" /></p>
+    </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Botón de redirección a MainGame -->
@@ -167,8 +172,12 @@
     <script>
         // Redirige al archivo MainGame.cshtml al hacer clic en el botón
         document.getElementById("playGameButton").addEventListener("click", function () {
-            window.location.href = '@Url.Page("MainGame")';
+            const roomCode = '@Model.RoomCode';
+            const playerName = '@Model.PlayerName';
+            const playerAvatar = '@Model.PlayerAvatar';
+            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
         });
+
     </script>
 
 <script>
