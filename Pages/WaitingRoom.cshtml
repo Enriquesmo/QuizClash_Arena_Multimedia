@@ -91,6 +91,18 @@
             background-color: #ff4500;
             transform: scale(1.1);
         }
+
+    .start-game-button:disabled {
+        background-color: #ffb366; /* Naranja apagado */
+        cursor: not-allowed;
+        transform: none;
+    }
+
+        .start-game-button:disabled:hover {
+            background-color: #ffb366;
+            transform: none;
+        }
+
 </style>
 
 <!-- Incluir jQuery antes de SignalR -->
@@ -112,14 +124,18 @@
     }
 </ul>
 
+<!-- Formulario para iniciar el juego -->
 <div style="text-align: center;">
     <form method="get" asp-page="upload_memes" onsubmit="startGame(event)">
         <input type="hidden" name="roomCode" value="@Model.RoomCode" />
         <input type="hidden" name="playerName" value="@Model.PlayerName" />
         <input type="hidden" name="playerAvatar" value="@Model.PlayerAvatar" />
-        <button type="submit" @(Model.CurrentRoom.CreatedBy.Name == Model.PlayerName ? "" : "disabled")>Iniciar Juego</button>
+        <button type="submit" @(Model.CurrentRoom.CreatedBy.Name == Model.PlayerName ? "" : "disabled") class="start-game-button">
+            Iniciar Juego
+        </button>
     </form>
 </div>
+
 
 <script>
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
