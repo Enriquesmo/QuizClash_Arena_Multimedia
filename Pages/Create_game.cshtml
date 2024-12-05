@@ -134,37 +134,84 @@
         }
 </style>
 
- <div class="container">
-         <h1>Crear Partida</h1>
-         <h2>Selecciona el número de jugadores:</h2>
-         <form method="post" asp-page-handler="CreateGame">
-             <input type="hidden" id="webSocketId" name="WebSocketId" />
-             <div class="players-gallery">
+<div class="container">
+    <h1>Crear Partida</h1>
+    <h2>Selecciona el número de jugadores:</h2>
+    <form method="post" asp-page-handler="CreateGame" id="createGameForm">
+        <input type="hidden" id="webSocketId" name="WebSocketId" />
+
+        <!-- Selección del número de jugadores -->
+        <div class="players-gallery">
             @for (int i = 2; i <= 6; i++)
             {
-                         <div class="player-option" data-players="@i">
+                <div class="player-option" data-players="@i" onclick="selectPlayers(this)">
                     @i
-                         </div>
+                </div>
             }
-             </div>
-             <input type="hidden" id="numPlayers" name="MaxPlayers" asp-for="MaxPlayers" required>
-             <br /><br />
-             <input type="text" id="playerName" name="PlayerName" asp-for="PlayerName" placeholder="Introduce tu nombre" required>
-             <br /><br />
-             <h2>Selecciona tu avatar:</h2>
-             <div class="avatar-gallery">
+        </div>
+        <input type="hidden" id="numPlayers" name="MaxPlayers" required>
+        <br /><br />
+
+        <!-- Entrada del nombre del jugador -->
+        <input type="text" id="playerName" name="PlayerName" asp-for="PlayerName" placeholder="Introduce tu nombre" required>
+        <br /><br />
+
+        <!-- Selección del avatar -->
+        <h2>Selecciona tu avatar:</h2>
+        <div class="avatar-gallery">
             @for (int i = 1; i <= 8; i++)
             {
-                         <div class="avatar-option" data-avatar="@Url.Content($"/images/avatars/avatar_{i}.png")">
-                             <img src="@Url.Content($"/images/avatars/avatar_{i}.png")" alt="Avatar @i" style="border-radius: 50%; width: 60px; height: 60px;">
-                         </div>
+                <div class="avatar-option" data-avatar="@Url.Content($"/images/avatars/avatar_{i}.png")">
+                    <img src="@Url.Content($"/images/avatars/avatar_{i}.png")" alt="Avatar @i" style="border-radius: 50%; width: 60px; height: 60px;" onclick="selectAvatar(this)">
+                </div>
             }
-             </div>
-             <input type="hidden" id="playerAvatar" name="PlayerAvatar" asp-for="PlayerAvatar" required>
-             <br /><br />
-             <button type="submit">Crear Sala</button>
-         </form>
-     </div>
+        </div>
+        <input type="hidden" id="playerAvatar" name="PlayerAvatar" required>
+        <br /><br />
+
+        <!-- Botón de envío -->
+        <button type="submit">Crear Sala</button>
+    </form>
+</div>
+
+<script>
+    // Selección del número de jugadores
+    function selectPlayers(element) {
+        const numPlayersInput = document.getElementById("numPlayers");
+        const selectedPlayers = element.getAttribute("data-players");
+        numPlayersInput.value = selectedPlayers;
+
+        // Quitar selección previa
+        document.querySelectorAll(".player-option").forEach(option => option.classList.remove("selected"));
+        element.classList.add("selected");
+    }
+
+    // Selección del avatar
+    function selectAvatar(element) {
+        const avatarInput = document.getElementById("playerAvatar");
+        const selectedAvatar = element.parentElement.getAttribute("data-avatar");
+        avatarInput.value = selectedAvatar;
+
+        // Quitar selección previa
+        document.querySelectorAll(".avatar-option").forEach(option => option.classList.remove("selected"));
+        element.parentElement.classList.add("selected");
+    }
+
+    // Validación del formulario
+    document.getElementById("createGameForm").addEventListener("submit", function (e) {
+        const playerAvatar = document.getElementById("playerAvatar").value;
+        const numPlayers = document.getElementById("numPlayers").value;
+
+        if (!numPlayers || numPlayers === "") {
+            e.preventDefault(); // Evitar envío del formulario
+            alert("Por favor, selecciona un número de jugadores antes de continuar.");
+        } else if (!playerAvatar || playerAvatar === "") {
+            e.preventDefault(); // Evitar envío del formulario
+            alert("Por favor, selecciona un avatar antes de continuar.");
+        }
+    });
+</script>
+
 
      <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
      <script>

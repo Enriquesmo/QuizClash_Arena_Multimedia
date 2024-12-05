@@ -134,12 +134,10 @@
 </style>
 
 
-
-
 <div class="container">
     <h1>Unirse a una Partida</h1>
 
-    <form method="post" asp-page-handler="JoinGame">
+    <form id="joinGameForm" method="post" asp-page-handler="JoinGame">
         <label for="roomCode">Código de la Sala:</label>
         <input type="text" id="roomCode" name="roomCode" required placeholder="Introduce el código" />
 
@@ -151,7 +149,7 @@
             @for (int i = 1; i <= 8; i++)
             {
                 <div class="avatar-option" data-avatar="@Url.Content($"/images/avatars/avatar_{i}.png")">
-                    <img src="@Url.Content($"/images/avatars/avatar_{i}.png")" alt="Avatar @i">
+                    <img src="@Url.Content($"/images/avatars/avatar_{i}.png")" alt="Avatar @i" onclick="selectAvatar(this)">
                 </div>
             }
         </div>
@@ -162,9 +160,45 @@
             <img id="avatarImage" src="" alt="Vista previa del avatar" style="display: none; width: 100px; height: 100px;" />
         </div>
 
-        <button type="submit" style="font-size: 20px; padding: 10px 20px;">Unirse</button>
+        <p id="error-message" style="color: red; display: none;">Por favor, selecciona un avatar antes de continuar.</p>
+
+        <button type="submit" style="font-size: 20px; padding: 10px 20px;" onclick="return validateForm()">Unirse</button>
     </form>
 </div>
+
+<script>
+    // Función para seleccionar un avatar
+    function selectAvatar(element) {
+        const avatarInput = document.getElementById("playerAvatar");
+        const selectedAvatar = element.parentElement.getAttribute("data-avatar");
+
+        // Asignar valor del avatar seleccionado
+        avatarInput.value = selectedAvatar;
+
+        // Ocultar mensaje de error si ya se seleccionó un avatar
+        const errorMessage = document.getElementById("error-message");
+        if (errorMessage.style.display === "block") {
+            errorMessage.style.display = "none";
+        }
+    }
+
+    // Validación del formulario
+    function validateForm() {
+        const playerAvatar = document.getElementById("playerAvatar").value;
+        const errorMessage = document.getElementById("error-message");
+
+        if (!playerAvatar || playerAvatar === "") {
+            // Mostrar mensaje de error si no hay avatar seleccionado
+            errorMessage.style.display = "block";
+            return false; // Evitar que el formulario se envíe
+        }
+
+        // Permitir que el formulario se envíe
+        return true;
+    }
+</script>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 <script>
