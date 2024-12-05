@@ -134,6 +134,28 @@
         width: 100px; /* Tamaño de la vista previa */
         height: auto;
     }
+
+    /* Nueva sección para el avatar y nombre del jugador */
+    .player-info {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+        .player-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
 </style>
 
 
@@ -146,24 +168,27 @@
 
     <!-- Formulario para subir las imágenes -->
     <form id="uploadForm" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="files">Seleccionar imágenes</label>
-        <input type="file" id="files" name="Files" multiple onchange="previewImage(event)" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="files">Seleccionar imágenes</label>
+            <input type="file" id="files" name="Files" multiple onchange="previewImage(event)" class="form-control" />
+        </div>
 
-    <div id="imagePreview" class="image-preview-container">
-        <!-- Vista previa de la imagen se mostrará aquí -->
-    </div>
+        <div id="imagePreview" class="image-preview-container">
+            <!-- Vista previa de la imagen se mostrará aquí -->
+        </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Subir imágenes</button>
+        <button type="submit" class="btn btn-primary mt-3">Subir imágenes</button>
     </form>
-    <div>
-        <p><strong>Código de la Sala:</strong> @Model.RoomCode</p>
-        <p><strong>Nombre del Jugador:</strong> @Model.PlayerName</p>
-        <p><strong>Avatar del Jugador:</strong> <img src="@Model.PlayerAvatar" style="width: 50px; height: 50px;" /></p>
+
+    <div class="player-info">
+        <img src="@Model.PlayerAvatar" alt="Avatar del Jugador" />
+        <div>
+            <p><strong>Nombre:</strong> @Model.PlayerName</p>
+            <p><strong>Código de la Sala:</strong> @Model.RoomCode</p>
+        </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Botón de redirección a MainGame -->
     <div class="mt-4">
         <button id="playGameButton" class="btn btn-success">¡Vamos a jugar ya!</button>
@@ -180,79 +205,58 @@
 
     </script>
 
-<script>
+    <script>
 
-    // Evita que el formulario se recargue
-    $('#uploadForm').on('submit', function (e) {
-        e.preventDefault(); // Evita la recarga de la página
+        // Evita que el formulario se recargue
+        $('#uploadForm').on('submit', function (e) {
+            e.preventDefault(); // Evita la recarga de la página
 
-        const formData = new FormData(this);
+            const formData = new FormData(this);
 
-        // Realiza la subida con AJAX
-        $.ajax({
-            url: '@Url.Page("upload_memes")', // URL de la página
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                // Actualiza la lista de memes subidos después de una carga exitosa
-                updateUploadedMemes();
-            },
-            error: function (xhr, status, error) {
-                console.error("Error al subir los archivos: " + error);
+            // Realiza la subida con AJAX
+            $.ajax({
+                url: '@Url.Page("upload_memes")', // URL de la página
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    // Actualiza la lista de memes subidos después de una carga exitosa
+                    updateUploadedMemes();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al subir los archivos: " + error);
+                }
+            });
+        });
+
+        // Función para actualizar la lista de memes subidos
+        function updateUploadedMemes() {
+            $.get('@Url.Page("upload_memes")', function (data) {
+                // Actualiza las imágenes sin recargar la página
+                const memeList = $(data).find('#uploadedMemes ul');
+                $('#uploadedMemes ul').html(memeList.html());
+            });
+        }
+
+        // Función para previsualizar los archivos seleccionados
+        function previewImage(event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = ''; // Limpia la vista previa
+
+            for (const file of files) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainer.appendChild(img);
+                }
+
+                reader.readAsDataURL(file);
             }
-        });
-    });
-
-    // Función para actualizar la lista de memes subidos
-    function updateUploadedMemes() {
-        $.get('@Url.Page("upload_memes")', function (data) {
-            // Actualiza las imágenes sin recargar la página
-            const memeList = $(data).find('#uploadedMemes ul');
-            $('#uploadedMemes ul').html(memeList.html());
-        });
-    }
-
-    // Función para previsualizar los archivos seleccionados
-    function previewImage(event) {
-        const files = event.target.files;
-        const previewContainer = document.getElementById("imagePreview");
-        previewContainer.innerHTML = '';  // Limpia cualquier vista previa anterior
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.classList.add("image-preview");
-                previewContainer.appendChild(img);
-            };
-
-            reader.readAsDataURL(file);
         }
-    }
 
-    // Contador de tiempo (1 minuto y 30 segundos)
-    let timeLeft = 90; // 90 segundos (1 minuto y 30 segundos)
-    const timerElement = document.getElementById("timer");
-
-    function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        if (timeLeft > 0) {
-            timeLeft--;
-        } else {
-            clearInterval(timerInterval);
-            alert("¡El tiempo ha terminado!");
-        }
-    }
-
-    // Actualizar el contador cada segundo
-    updateTimer(); // Llamar inmediatamente para mostrar el tiempo inicial
-    const timerInterval = setInterval(updateTimer, 1000);
-</script>
+    </script>
