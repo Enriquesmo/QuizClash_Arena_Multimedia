@@ -44,3 +44,40 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<audio id="backgroundMusic" loop>
+    <source src="/musica/Neon_Lights.mp3" type="audio/mp3">
+    Tu navegador no soporta la reproducción de audio.
+</audio>
+
+<style>
+    #backgroundMusic {
+        display: none; /* Oculta el reproductor de audio */
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const music = document.getElementById("backgroundMusic");
+
+        // Configurar volumen
+        music.volume = 0.5;
+
+        // Recuperar tiempo de reproducción si existe
+        const savedTime = localStorage.getItem("musicCurrentTime");
+        if (savedTime) {
+            music.currentTime = parseFloat(savedTime);
+        }
+
+        // Reproducir automáticamente
+        music.play();
+
+        // Guardar el tiempo de reproducción al cambiar de página
+        window.addEventListener("beforeunload", function () {
+            localStorage.setItem("musicCurrentTime", music.currentTime);
+        });
+    });
+</script>
+
+
+

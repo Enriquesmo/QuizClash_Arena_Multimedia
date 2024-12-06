@@ -76,7 +76,6 @@
     <None Include="wwwroot\images\avatars\avatar_7.png" />
     <None Include="wwwroot\images\avatars\avatar_8.png" />
     <None Include="wwwroot\images\avatars\avatar_9.png" />
-    <None Include="wwwroot\images\fondo.jpg" />
     <None Include="wwwroot\images\ImagenOriginalAvatars.jpg" />
   </ItemGroup>
 
