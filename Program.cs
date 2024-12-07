@@ -151,14 +151,15 @@ app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
 // ====================================================================
 app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFactory) =>
 {
-    context.Response.Cookies.Delete("access_token");
-    context.Response.Cookies.Delete("brodcasterId");
+
     var accessToken = context.Request.Cookies["access_token"];
     var broadcasterId = context.Request.Cookies["brodcasterId"];
     // Verificamos si ya están presentes las cookies
     if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(broadcasterId))
     {
-        return Results.Redirect("/Login_Twitch");
+        context.Response.Cookies.Delete("access_token");
+        context.Response.Cookies.Delete("brodcasterId");
+        //return Results.Redirect("/Login_Twitch");
     }
     // Si no, procedemos con la autenticación
     var authenticateResult = await context.AuthenticateAsync("Twitch");
@@ -196,14 +197,14 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.Lax,
-        Expires = DateTimeOffset.UtcNow.AddDays(30)
+        //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
     context.Response.Cookies.Append("brodcasterId", broadcasterId, new CookieOptions
     {
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.Lax,
-        Expires = DateTimeOffset.UtcNow.AddDays(30)
+        //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
 
     return Results.Redirect("/Login_Twitch");
@@ -245,20 +246,14 @@ app.MapGet("/signin-twitch", async (HttpContext context) =>
         RedirectUri = "/prueba"
     });
 });
-app.MapGet("/prueba2", async (HttpContext context) =>
-{
-    await context.ChallengeAsync("Twitch", new AuthenticationProperties
-    {
-        RedirectUri = "/start-stream"
-    });
-});
+
 
 app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory clientFactory) =>
 {
     var accessToken = context.Request.Cookies["access_token"];
     var broadcasterId = context.Request.Cookies["brodcasterId"];
     var clientId = builder.Configuration["Twitch:ClientId"]; // El ClientId lo tienes en tu configuración
-
+    var roomCode = context.Request.Query["roomCode"];
     if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(broadcasterId) || string.IsNullOrEmpty(clientId))
     {
         return Results.BadRequest("No se encuentran los datos necesarios.");
@@ -267,7 +262,7 @@ app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory cl
     try
     {
         // Crear el servicio de chat con la información obtenida
-        var chatService = new TwitchChatService(accessToken, broadcasterId, clientId);
+        var chatService = new TwitchChatService(accessToken, broadcasterId, clientId, roomCode);
         chatService.StartVotingAsync();
         return Results.Ok("Poll started, check console for results.");
     }

@@ -1,24 +1,25 @@
-﻿using TwitchLib.Client;
-using TwitchLib.Client.Models;
-using TwitchLib.Client.Events;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using QuizClash_Arena_Multimedia.Models;
 using System.Text.Json;
+using TwitchLib.Client.Events;
+using TwitchLib.Client.Models;
+using TwitchLib.Client;
 
 public class TwitchChatService
 {
     private readonly TwitchClient _client;
-    private int _votesJ1 = 0;
-    private int _votesJ2 = 0;
     private readonly string _broadcasterId;
     private readonly string _clientId;
     private readonly string _accessToken;
+    private readonly string _roomCode;
+    private List<string> _playerNames = new List<string>();
+    private Dictionary<string, int> _votes;
 
-    public TwitchChatService(string accessToken, string broadcasterId, string clientId)
+    public TwitchChatService(string accessToken, string broadcasterId, string clientId, string roomCode)
     {
         _accessToken = accessToken;
         _broadcasterId = broadcasterId;
         _clientId = clientId;
+        _roomCode = roomCode;
 
         // Obtener el nombre de usuario usando el broadcasterId
         var username = GetUsernameFromBroadcasterId(broadcasterId, accessToken, clientId).Result;
@@ -36,8 +37,17 @@ public class TwitchChatService
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         var message = e.ChatMessage.Message.ToLower();
-        if (message.Contains("j1")) _votesJ1++;
-        else if (message.Contains("j2")) _votesJ2++;
+
+        // Verificar si el mensaje contiene el nombre de algún jugador
+        foreach (var playerName in _playerNames)
+        {
+            if (message.Contains(playerName.ToLower()))
+            {
+                // Incrementar el voto para el jugador correspondiente
+                _votes[playerName]++;
+                break;
+            }
+        }
     }
 
     // Iniciar votación
@@ -45,18 +55,38 @@ public class TwitchChatService
     {
         try
         {
+            // Leer el archivo JSON de la sala
+            var filePath = Path.Combine("Data", "Rooms", $"{_roomCode}.json");
+            var jsonRoomContent = await File.ReadAllTextAsync(filePath);
+            var room = JsonSerializer.Deserialize<Room>(jsonRoomContent);
+
+            // Configurar los nombres de los jugadores y los contadores de votos
+            _playerNames = room?.Players.Select(p => p.Name).ToList() ?? new List<string>();
+            _votes = _playerNames.ToDictionary(name => name, name => 0);
+
+            // Enviar mensaje inicial con las opciones de votación
+            string voteOptions = string.Join(" o ", _playerNames);
             _client.Connect();
-            _client.SendMessage(_client.JoinedChannels[0], "¡Inicia la votación! Escribe 'j1' o 'j2' para votar.");
+            _client.SendMessage(_client.JoinedChannels[0], $"¡Inicia la votación! Escribe el nombre de un jugador ({voteOptions}) para votar.");
 
             // Esperar 30 segundos
             await Task.Delay(30000);
 
             // Finalizar votación y enviar resultados
-            _client.SendMessage(_client.JoinedChannels[0], $"Votación finalizada: J1 = {_votesJ1}, J2 = {_votesJ2}");
+            var voteResultMessage = "Votación finalizada: ";
+            foreach (var playerName in _playerNames)
+            {
+                voteResultMessage += $"{playerName} = {_votes[playerName]} ";
+            }
+            _client.SendMessage(_client.JoinedChannels[0], voteResultMessage);
 
             // Determinar el ganador
-            var winner = _votesJ1 > _votesJ2 ? "J1" : _votesJ1 < _votesJ2 ? "J2" : "Empate";
-            _client.SendMessage(_client.JoinedChannels[0], $"Resultado: {winner}");
+            var maxVotes = _votes.Values.Max();
+            var winners = _votes.Where(v => v.Value == maxVotes).Select(v => v.Key).ToList();
+            var winnerMessage = winners.Count > 1
+                ? $"Empate entre: {string.Join(", ", winners)}"
+                : $"Ganador: {winners.First()}";
+            _client.SendMessage(_client.JoinedChannels[0], winnerMessage);
 
         }
         catch (Exception ex)
@@ -90,5 +120,21 @@ public class TwitchChatService
         {
             throw new Exception("Error obteniendo el nombre de usuario desde Twitch.", ex);
         }
+    }
+
+    public class Room
+    {
+        public string RoomCode { get; set; }
+        public int NumPlayers { get; set; }
+        public Player CreatedBy { get; set; }
+        public List<Player> Players { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public List<Round> Rounds { get; set; }
+        public bool GameStarted { get; set; }
+    }
+
+    public class Player
+    {
+        public string Name { get; set; }
     }
 }
