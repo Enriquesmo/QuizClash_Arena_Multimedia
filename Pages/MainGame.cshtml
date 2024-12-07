@@ -106,25 +106,29 @@
     button:hover {
         background-color: #ff4500;
         transform: scale(1.1);
+        .submit-button:focus
 
-        .submit-button:focus {
-            outline: none;
-        }
+    {
+        outline: none;
+    }
 </style>
+
+<!-- Incluir jQuery antes de SignalR -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
 
 <div class="main-container">
     <h1>Meme Aleatorio</h1>
     <div class="meme-container">
-        <p>@Model.RandomMemePath</p> <!-- Esto imprime la ruta generada -->
-        <img src="@Model.RandomMemePath" alt="Meme" class="random-meme">
+        <img id="randomMeme" src="@Model.MemePath1" alt="Meme" class="random-meme">
     </div>
 
     <!-- Formulario para ingresar texto -->
     <div class="text-entry-container">
-        <form method="post">
+        <form method="get" asp-page-handler="Submit" id="submitForm">
             <label for="userText" class="form-label">Escribe tu texto:</label>
             <textarea id="userText" name="userText" class="form-textarea" rows="4" placeholder="Escribe algo..."></textarea>
-            <button type="submit" class="submit-button">Enviar</button>
+            <button type="button" onclick="sendToHub('@Model.RoomCode', document.getElementById('userText').value, '@Model.PlayerName')">Enviar</button>
         </form>
     </div>
     <div>
@@ -133,5 +137,39 @@
         <p><strong>Avatar del Jugador:</strong> <img src="@Model.PlayerAvatar" style="width: 50px; height: 50px;" /></p>
         <a href="/start-chat-poll" class="btn btn-primary">Iniciar votacion</a>
     </div>
-
 </div>
+
+<script>
+    let currentMemeIndex = 0;
+    const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+    const roomCode = "@Model.RoomCode";
+    const playerName = "@Model.PlayerName";
+
+    const memePaths = [
+        '@Model.MemePath1',
+        '@Model.MemePath2',
+        '@Model.MemePath3',
+        '@Model.MemePath4',
+        '@Model.MemePath5'
+    ];
+
+
+    // Inicia la conexión
+    connection.start().catch(err => console.error("Error de conexión: ", err));
+
+    // Función para enviar datos al GameHub
+    function sendToHub(codeRoom, userText, playerName) {
+        connection.invoke("SendData", codeRoom, currentMemeIndex, userText, playerName)
+            .catch(err => console.error("Error al enviar datos: ", err));
+
+
+        currentMemeIndex = (currentMemeIndex + 1) % memePaths.length;
+        const memeImage = document.getElementById("randomMeme");
+        if (memeImage) {
+            memeImage.src = memePaths[currentMemeIndex];
+        }
+
+
+    }
+</script>
+

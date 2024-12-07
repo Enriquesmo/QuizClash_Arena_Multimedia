@@ -86,6 +86,22 @@ namespace QuizClash_Arena_Multimedia.Hubs
         // ====================================================================
         // Métodos de gestión de salas
         // ====================================================================
+
+        public async Task SendData(string roomCode, int currentMemeIndex, string userText, string playerName)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                roomData.Rounds[currentMemeIndex].Answers.Add(new Respuesta (playerName, userText));
+
+                // Guardar los cambios en el archivo JSON
+                var updatedJson = JsonSerializer.Serialize(roomData, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(roomFilePath, updatedJson);
+            }
+        }
+
         public async Task CreateRoom(string roomCode, int playerLimit, string creatorName, string creatorAvatar, string creatorWebSocketID)
         {
             try
