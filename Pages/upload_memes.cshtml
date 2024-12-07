@@ -156,23 +156,21 @@
             height: 40px;
             border-radius: 50%;
         }
-        /* Mensaje de éxito */
-.success-message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 255, 0, 0.8);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    animation: fadeInOut 3s;
-}
 
-
+    .success-message {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 255, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        animation: fadeInOut 3s;
+    }
 </style>
 
 
@@ -223,7 +221,40 @@
     </script>
 
     <script>
+        // Tiempo en segundos (1:30 = 90 segundos)
+        let timeRemaining = 90;
 
+        const timerElement = document.getElementById("timer");
+
+        // Función para actualizar el temporizador
+        function updateTimer() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+
+            // Formatea el tiempo como MM:SS
+            timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+            // Cuando el tiempo llega a 0, redirige automáticamente
+            if (timeRemaining <= 0) {
+                redirectToMainGame();
+            } else {
+                timeRemaining--;
+            }
+        }
+
+        // Redirige al archivo MainGame.cshtml
+        function redirectToMainGame() {
+            const roomCode = '@Model.RoomCode';
+            const playerName = '@Model.PlayerName';
+            const playerAvatar = '@Model.PlayerAvatar';
+            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+        }
+
+        // Llama a updateTimer cada segundo
+        setInterval(updateTimer, 1000);
+
+        // Inicializa el temporizador
+        updateTimer();
         // Evita que el formulario se recargue
         $('#uploadForm').on('submit', function (e) {
             e.preventDefault(); // Evita la recarga de la página
@@ -240,7 +271,6 @@
                 success: function (response) {
                     // Muestra un mensaje de éxito
                     showSuccessMessage("¡Meme subido correctamente!");
-
                     // Actualiza la lista de memes subidos después de una carga exitosa
                     updateUploadedMemes();
                 },
@@ -249,18 +279,19 @@
                 }
             });
         });
-
         // Función para mostrar un mensaje de éxito
         function showSuccessMessage(message) {
             const messageDiv = document.createElement('div');
             messageDiv.textContent = message;
             messageDiv.classList.add('success-message');
             document.body.appendChild(messageDiv);
+
             // Desaparece automáticamente después de 3 segundos
             setTimeout(() => {
                 messageDiv.remove();
             }, 3000);
         }
+
         // Función para actualizar la lista de memes subidos
         function updateUploadedMemes() {
             $.get('@Url.Page("upload_memes")', function (data) {
