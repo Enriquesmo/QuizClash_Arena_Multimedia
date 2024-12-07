@@ -92,6 +92,27 @@
             outline: none;
         }
 
+    .player-info {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+        .player-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
     .submit-button {
         padding: 12px 20px;
         font-size: 16px;
@@ -102,7 +123,7 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.3s;
     }
-
+       
     button:hover {
         background-color: #ff4500;
         transform: scale(1.1);
@@ -132,11 +153,12 @@
             <button type="button" id="irAnuevaPagina" style="display: none;" onclick="irAlaVotacion()">Ir a la Votación</button>
         </form>
     </div>
-    <div>
-        <p><strong>Código de la Sala:</strong> @Model.RoomCode</p>
-        <p><strong>Nombre del Jugador:</strong> @Model.PlayerName</p>
-        <p><strong>Avatar del Jugador:</strong> <img src="@Model.PlayerAvatar" style="width: 50px; height: 50px;" /></p>
-        <a href="/start-chat-poll" class="btn btn-primary">Iniciar votacion</a>
+    <div class="player-info">
+        <img src="@Model.PlayerAvatar" alt="Avatar del Jugador" />
+        <div>
+            <p><strong>Nombre:</strong> @Model.PlayerName</p>
+            <p><strong>Código de la Sala:</strong> @Model.RoomCode</p>
+        </div>
     </div>
 </div>
 
