@@ -262,12 +262,16 @@ app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory cl
     try
     {
         // Crear el servicio de chat con la información obtenida
+       
         var chatService = new TwitchChatService(accessToken, broadcasterId, clientId, roomCode);
-        chatService.StartVotingAsync();
-        return Results.Ok("Poll started, check console for results.");
+        
+        var ganador= await chatService.StartVotingAsync();
+        return Results.Redirect($"/winning_result?resultWin={ganador}");
+        //return Results.Ok(new { message = "Poll started", winner = ganador });
     }
     catch (Exception ex)
     {
+
         return Results.BadRequest($"Error al conectar con el chat: {ex.Message}");
     }
 });

@@ -51,7 +51,7 @@ public class TwitchChatService
     }
 
     // Iniciar votación
-    public async Task StartVotingAsync()
+    public async Task<string> StartVotingAsync()
     {
         try
         {
@@ -66,7 +66,12 @@ public class TwitchChatService
 
             // Enviar mensaje inicial con las opciones de votación
             string voteOptions = string.Join(" o ", _playerNames);
-            _client.Connect();
+            if (!_client.IsConnected)
+            {
+                _client.Connect();
+                await Task.Delay(2000); // Esperar un momento para garantizar la conexión
+            }
+
             _client.SendMessage(_client.JoinedChannels[0], $"¡Inicia la votación! Escribe el nombre de un jugador ({voteOptions}) para votar.");
 
             // Esperar 30 segundos
@@ -86,18 +91,22 @@ public class TwitchChatService
             var winnerMessage = winners.Count > 1
                 ? $"Empate entre: {string.Join(", ", winners)}"
                 : $"Ganador: {winners.First()}";
+
             _client.SendMessage(_client.JoinedChannels[0], winnerMessage);
 
+            return winnerMessage; // Devolver el resultado
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error durante la votación: {ex.Message}");
+            return "Hubo un error al determinar el ganador.";
         }
         finally
         {
             _client.Disconnect();
         }
     }
+
 
     // Obtener nombre de usuario desde la API de Twitch
     private async Task<string> GetUsernameFromBroadcasterId(string broadcasterId, string accessToken, string clientId)

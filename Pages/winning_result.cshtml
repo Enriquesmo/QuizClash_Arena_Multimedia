@@ -1,0 +1,94 @@
+﻿@page
+@model QuizClash_Arena_Multimedia.Pages.WinningResultModel
+@{
+    ViewData["Title"] = "Resultado de la Votación";
+}
+
+<style>
+    body {
+        background-image: url('/images/fondo_azul.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        text-align: center;
+        margin: 50px auto;
+        padding: 20px;
+        max-width: 800px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #ff6699, #ffcc00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    p {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #ffcc00;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .winner {
+        font-size: 2em;
+        font-weight: bold;
+        color: #00ff00;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .play-button-container {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .play-button {
+        display: inline-block;
+        padding: 15px 30px;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: white;
+        background-color: #ff4500;
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .play-button:hover {
+            background-color: #ff3366;
+            transform: scale(1.05);
+        }
+</style>
+
+<div class="container">
+    <h2>Resultado de la Votación</h2>
+
+    @if (!string.IsNullOrEmpty(Model.Winner))
+    {
+        <p>El ganador es:</p>
+        <p class="winner">@Model.Winner</p>
+    }
+    else
+    {
+        <p>No se pudo determinar el ganador.</p>
+    }
+
+    <!-- Botón para continuar -->
+    <div class="play-button-container">
+        <a href="/Create_game" class="play-button">Continuar</a>
+    </div>
+</div>
