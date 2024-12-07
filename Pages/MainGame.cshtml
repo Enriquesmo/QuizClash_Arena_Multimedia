@@ -126,9 +126,10 @@
     <!-- Formulario para ingresar texto -->
     <div class="text-entry-container">
         <form method="get" asp-page-handler="Submit" id="submitForm">
-            <label for="userText" class="form-label">Escribe tu texto:</label>
+            <label id="textito" for=" userText" class="form-label">Escribe tu texto:</label>
             <textarea id="userText" name="userText" class="form-textarea" rows="4" placeholder="Escribe algo..."></textarea>
-            <button type="button" onclick="sendToHub('@Model.RoomCode', document.getElementById('userText').value, '@Model.PlayerName')">Enviar</button>
+            <button type="button" id="sendButton" onclick="sendToHub('@Model.RoomCode', document.getElementById('userText').value, '@Model.PlayerName')">Enviar</button>
+            <button type="button" id="irAnuevaPagina" style="display: none;" onclick="irAlaVotacion()">Ir a la Votación</button>
         </form>
     </div>
     <div>
@@ -153,7 +154,6 @@
         '@Model.MemePath5'
     ];
 
-
     // Inicia la conexión
     connection.start().catch(err => console.error("Error de conexión: ", err));
 
@@ -162,14 +162,28 @@
         connection.invoke("SendData", codeRoom, currentMemeIndex, userText, playerName)
             .catch(err => console.error("Error al enviar datos: ", err));
 
-
         currentMemeIndex = (currentMemeIndex + 1) % memePaths.length;
         const memeImage = document.getElementById("randomMeme");
         if (memeImage) {
             memeImage.src = memePaths[currentMemeIndex];
         }
 
+        // Vaciar el contenido del textarea
+        document.getElementById("userText").value = "";
 
+        // Ocultar el botón actual y mostrar el nuevo botón cuando currentMemeIndex sea 4
+        if (currentMemeIndex === 4) {
+            document.getElementById("sendButton").style.display = "none";
+            document.getElementById("textito").style.display = "none";
+            document.getElementById("userText").style.display = "none";
+            document.getElementById("randomMeme").style.display = "none";
+            document.getElementById("irAnuevaPagina").style.display = "block";
+        }
+    }
+
+    // Función para la nueva funcionalidad del nuevo botón
+    function irAlaVotacion() {
+        // Aquí puedes agregar la funcionalidad del nuevo botón
+        alert("Nueva funcionalidad activada");
     }
 </script>
-
