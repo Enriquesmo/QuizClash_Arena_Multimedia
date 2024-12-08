@@ -113,6 +113,39 @@
             border-radius: 50%;
         }
 
+    #irAnuevaPagina {
+        display: flex; /* Alinea el botón si decides añadir más elementos en el futuro */
+        justify-content: center; /* Centra el botón horizontalmente */
+        margin: 0; /* Elimina cualquier espacio extra */
+        padding: 0; /* Elimina relleno extra */
+        background: none; /* Quita el fondo blanco del contenedor */
+    }
+
+    .start-game-button {
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 15px 30px;
+        background: linear-gradient(90deg, #ff6633, #ffcc00);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+        .start-game-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(90deg, #ff4500, #ffcc00);
+        }
+
+        .start-game-button:active {
+            transform: scale(1.05);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(90deg, #ff3300, #ffb300);
+        }
+
     .submit-button {
         padding: 12px 20px;
         font-size: 16px;
