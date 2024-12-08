@@ -65,18 +65,54 @@ namespace QuizClash_Arena_Multimedia.Pages
         private void CreateRounds()
         {
             var memes = LoadMemes();
+            var memesPath = Path.Combine("wwwroot", "Memes");
+            var memesFromMemesPath = Directory.Exists(memesPath) ? Directory.GetFiles(memesPath, "*.*").Where(f => f.EndsWith(".png") || f.EndsWith(".jpeg") || f.EndsWith(".jpg")).ToList() : new List<string>();
             Random random = new Random();
 
-            for (int i = 0; i < 5; i++)
+            if (memesFromMemesPath.Any())
             {
-                if (memes.Any())
+                // Asegurarse de que al menos una ronda tenga un meme de la carpeta "wwwroot/Memes"
+                var selectedMeme = memesFromMemesPath[random.Next(memesFromMemesPath.Count)];
+                var memePath = "/Memes/" + Path.GetFileName(selectedMeme);
+                CurrentRoom.Rounds.Add(new Round(memePath));
+
+                // Completar las rondas restantes
+                for (int i = 1; i < 5; i++)
                 {
-                    var selectedMeme = memes[random.Next(memes.Count)];
-                    var memePath = selectedMeme.StartsWith("wwwroot/Memes") ? "/Memes/" + Path.GetFileName(selectedMeme) : "/memes_repetidos/" + Path.GetFileName(selectedMeme);
-                    CurrentRoom.Rounds.Add(new Round(memePath));
+                    if (memes.Any())
+                    {
+                        selectedMeme = memes[random.Next(memes.Count)];
+                        memePath = selectedMeme.StartsWith("wwwroot/Memes") ? "/Memes/" + Path.GetFileName(selectedMeme) : "/memes_repetidos/" + Path.GetFileName(selectedMeme);
+                        CurrentRoom.Rounds.Add(new Round(memePath));
+                    }
+                }
+            }
+            else
+            {
+                // Proceder normalmente si no hay memes en la carpeta "wwwroot/Memes"
+                for (int i = 0; i < 5; i++)
+                {
+                    if (memes.Any())
+                    {
+                        var selectedMeme = memes[random.Next(memes.Count)];
+                        var memePath = selectedMeme.StartsWith("wwwroot/Memes") ? "/Memes/" + Path.GetFileName(selectedMeme) : "/memes_repetidos/" + Path.GetFileName(selectedMeme);
+                        CurrentRoom.Rounds.Add(new Round(memePath));
+                    }
                 }
             }
         }
+        private int CountMemesInFolder(string folderPath)
+        {
+            if (Directory.Exists(folderPath))
+            {
+                var memeFiles = Directory.GetFiles(folderPath, "*.*")
+                                          .Where(f => f.EndsWith(".png") || f.EndsWith(".jpeg") || f.EndsWith(".jpg"))
+                                          .ToList();
+                return memeFiles.Count;
+            }
+            return 0;
+        }
+
         private void SaveRoomToJson()
         {
             var filePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");

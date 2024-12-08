@@ -32,15 +32,12 @@ namespace QuizClash_Arena_Multimedia.Pages
             _applicationLifetime = applicationLifetime;
         }
 
-
-
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
             RoomCode = roomCode;
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;
 
-            // Aquí puedes procesar los datos según sea necesario.
         }
 
         // Método POST para manejar la subida de archivos
