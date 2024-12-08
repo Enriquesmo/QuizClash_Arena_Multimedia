@@ -2,65 +2,94 @@
 @model QuizClash_Arena_Multimedia.Pages.CheckResultsModel
 @{
     <style>
+        body {
+            background-image: url('/images/fondo_azul.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
         .player-info {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: white;
-            font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            gap: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.8);
         }
 
             .player-info img {
-                width: 40px;
-                height: 40px;
+                width: 60px;
+                height: 60px;
                 border-radius: 50%;
+                border: 2px solid #ffcc00;
             }
 
         .rounds-container {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding: 20px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 150px;
+            padding: 30px;
+            gap: 20px;
         }
 
         .round-container {
-            flex: 0 0 auto;
-            width: 200px;
-            margin-right: 20px;
-            padding: 10px;
+            flex: 0 1 300px;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
+
+            .round-container:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 20px rgba(255, 204, 0, 0.8);
+            }
 
         .round-image {
             width: 100%;
-            height: 150px;
+            height: 200px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 15px;
+            border: 3px solid #ffcc00;
+            margin-bottom: 15px;
         }
 
         .answers {
-            margin-top: 10px;
-            height: 100px;
+            margin-top: 15px;
+            max-height: 150px;
             overflow-y: auto;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.6);
         }
 
         .answer {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 10px;
             border-radius: 5px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            text-align: left;
         }
+
+            .answer p {
+                margin: 0;
+                font-size: 1rem;
+            }
     </style>
+
     <div class="player-info">
         <img src="@Model.PlayerAvatar" alt="Avatar del Jugador" />
         <div>
