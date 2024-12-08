@@ -151,7 +151,7 @@ app.MapHub<GameHub>("/gameHub");  // Aquí mapeamos el Hub para SignalR
 // ====================================================================
 app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFactory) =>
 {
-
+    Boolean auth = false;
     var accessToken = context.Request.Cookies["access_token"];
     var broadcasterId = context.Request.Cookies["brodcasterId"];
     // Verificamos si ya están presentes las cookies
@@ -167,6 +167,7 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
     {
         return Results.BadRequest("No se pudo autenticar con Twitch.");
     }
+    auth=true;
     // Acceder al token de acceso
     accessToken = authenticateResult.Properties.GetTokenValue("access_token");
     var clientId = builder.Configuration["Twitch:ClientId"];
@@ -207,7 +208,7 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
         //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
 
-    return Results.Redirect("/Login_Twitch");
+    return Results.Redirect($"/Login_Twitch?auth={auth}");
 });
 app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clientFactory, TwitchApiService twitchApiService) =>
 {

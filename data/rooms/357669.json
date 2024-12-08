@@ -1,0 +1,102 @@
+{
+  "RoomCode": "357669",
+  "NumPlayers": 2,
+  "CreatedBy": {
+    "Name": "roberto",
+    "Avatar": "/images/avatars/avatar_1.png",
+    "WebSocketId": "hdIdtOXjvwO92J3tjYODlw"
+  },
+  "Players": [
+    {
+      "Name": "roberto",
+      "Avatar": "/images/avatars/avatar_1.png",
+      "WebSocketId": "hdIdtOXjvwO92J3tjYODlw"
+    },
+    {
+      "Name": "miriam",
+      "Avatar": "/images/avatars/avatar_5.png",
+      "WebSocketId": "e8-db0rna7zhDsoOM-68yg"
+    }
+  ],
+  "CreatedAt": "2024-12-08T20:03:21.360328+01:00",
+  "Rounds": [
+    {
+      "MemePath": "/memes_repetidos/27.jpeg",
+      "Answers": [
+        {
+          "PlayerName": "roberto",
+          "Response": "a",
+          "votos": 0
+        },
+        {
+          "PlayerName": "miriam",
+          "Response": "b",
+          "votos": 0
+        }
+      ]
+    },
+    {
+      "MemePath": "/memes_repetidos/36.jpeg",
+      "Answers": [
+        {
+          "PlayerName": "roberto",
+          "Response": "a",
+          "votos": 0
+        },
+        {
+          "PlayerName": "miriam",
+          "Response": "b",
+          "votos": 0
+        }
+      ]
+    },
+    {
+      "MemePath": "/memes_repetidos/37.jpeg",
+      "Answers": [
+        {
+          "PlayerName": "roberto",
+          "Response": "a",
+          "votos": 0
+        },
+        {
+          "PlayerName": "miriam",
+          "Response": "b",
+          "votos": 0
+        }
+      ]
+    },
+    {
+      "MemePath": "/memes_repetidos/23.jpeg",
+      "Answers": [
+        {
+          "PlayerName": "roberto",
+          "Response": "a",
+          "votos": 0
+        },
+        {
+          "PlayerName": "miriam",
+          "Response": "b",
+          "votos": 0
+        }
+      ]
+    },
+    {
+      "MemePath": "/memes_repetidos/24.jpeg",
+      "Answers": [
+        {
+          "PlayerName": "roberto",
+          "Response": "a",
+          "votos": 0
+        },
+        {
+          "PlayerName": "miriam",
+          "Response": "b",
+          "votos": 0
+        }
+      ]
+    }
+  ],
+  "GameStarted": true,
+  "CurrentRound": 0,
+  "GameEnded": true
+}

@@ -83,15 +83,25 @@ public class TwitchChatService
             {
                 voteResultMessage += $"{playerName} = {_votes[playerName]} ";
             }
+
             _client.SendMessage(_client.JoinedChannels[0], voteResultMessage);
 
             // Determinar el ganador
             var maxVotes = _votes.Values.Max();
             var winners = _votes.Where(v => v.Value == maxVotes).Select(v => v.Key).ToList();
-            var winnerMessage = winners.Count > 1
-                ? $"Empate entre: {string.Join(", ", winners)}"
-                : $"Ganador: {winners.First()}";
+            string winnerMessage;
 
+            if (winners.Count > 1)
+            {
+                winnerMessage = $"Empate entre: {string.Join(", ", winners)}";
+            }
+            else
+            {
+                winnerMessage = $"Ganador: {winners.First()}";
+            }
+
+
+            await Task.Delay(1500);
             _client.SendMessage(_client.JoinedChannels[0], winnerMessage);
 
             return winnerMessage; // Devolver el resultado

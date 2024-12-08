@@ -114,4 +114,22 @@
             </div>
         }
     </div>
+    <div class="mt-4">
+        <button id="playGameButton" class="btn btn-success">¡Inicia votación en twitch!</button>
+    </div>
+
+    <script>
+        // Redirige al archivo '/start-chat-poll' con los parámetros al hacer clic en el botón
+        document.getElementById("playGameButton").addEventListener("click", function () {
+            const roomCode = '@Model.RoomCode';
+            const playerName = '@Model.PlayerName';
+            const playerAvatar = '@Model.PlayerAvatar';
+
+            // Construir la URL con los parámetros
+            const url = `/start-chat-poll?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+
+            // Redirigir a la URL construida
+            window.location.href = url;
+        });
+    </script>
 }

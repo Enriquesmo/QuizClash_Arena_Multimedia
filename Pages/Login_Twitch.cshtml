@@ -1,7 +1,7 @@
 ﻿@page
 @using QuizClash_Arena_Multimedia.Services
-@inject TwitchApiService TwitchApiService  // Inyectamos el servicio para interactuar con Twitch
 
+@model QuizClash_Arena_Multimedia.Pages.Login_TwitchModel
 @{
     ViewData["Title"] = "Bienvenido a QuizClash";
 }
@@ -74,20 +74,16 @@
 <div class="container">
     <h2>Bienvenido a QuizClash</h2>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (Model.auth=="True")
     {
         var username = User.Identity.Name;
         var broadcasterId = User.FindFirst("brodcasterId")?.Value;
-        var streamKey = User.FindFirst("StreamKey")?.Value;
-
+        
         <p>¡Hola, <strong>@username</strong>! 🎮</p>
         <p>Tu Broadcaster ID es: <strong>@broadcasterId</strong></p>
-        @if (!string.IsNullOrEmpty(streamKey))
-        {
-            <p>Tu clave de transmisión es: <strong>@streamKey</strong></p>
-        }
+
         <a href="/start-stream" class="btn btn-primary">Iniciar emisión en Twitch</a>
-        <a href="/signin-twitch" class="btn btn-primary">Iniciar sesión con Twitch</a>
+        
     }
     else
     {
