@@ -15,6 +15,7 @@ namespace QuizClash_Arena_Multimedia.Models
         public List<Round> Rounds { get; set; }
         public bool GameStarted { get; set; }
         public int CurrentRound { get; set; }
+        public bool GameEnded { get; set; }
 
         // Constructor sin parámetros necesario para la deserialización
         public Room()
@@ -36,6 +37,7 @@ namespace QuizClash_Arena_Multimedia.Models
             Rounds = new List<Round>();
             GameStarted = false;
             CurrentRound = 0;
+            GameEnded = false;
         }
     }
 

@@ -123,7 +123,7 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.3s;
     }
-       
+
     button:hover {
         background-color: #ff4500;
         transform: scale(1.1);
@@ -150,7 +150,12 @@
             <label id="textito" for=" userText" class="form-label">Escribe tu texto:</label>
             <textarea id="userText" name="userText" class="form-textarea" rows="4" placeholder="Escribe algo..."></textarea>
             <button type="button" id="sendButton" onclick="sendToHub('@Model.RoomCode', document.getElementById('userText').value, '@Model.PlayerName')">Enviar</button>
-            <button type="button" id="irAnuevaPagina" style="display: none;" onclick="irAlaVotacion()">Ir a la Votación</button>
+            <button type="button" style="display: none;">n</button>
+        </form>
+        <form method="get" id="irAnuevaPagina" asp-page="CheckResults" onsubmit="FinishGame(event)" style="display: none;">
+            <button id="irAnuevaPaginaButton" type="submit" class="start-game-button">
+                Ir a la Votación
+            </button>
         </form>
     </div>
     <div class="player-info">
@@ -167,6 +172,8 @@
     const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
     const roomCode = "@Model.RoomCode";
     const playerName = "@Model.PlayerName";
+    const creatorName = "@Model.CreatorName";
+    const playerAvatar = "@Model.PlayerAvatar"
 
     const memePaths = [
         '@Model.MemePath1',
@@ -184,7 +191,7 @@
         connection.invoke("SendData", codeRoom, currentMemeIndex, userText, playerName)
             .catch(err => console.error("Error al enviar datos: ", err));
 
-        currentMemeIndex = (currentMemeIndex + 1) % memePaths.length;
+        currentMemeIndex = (currentMemeIndex + 1) % (memePaths.length + 1);
         const memeImage = document.getElementById("randomMeme");
         if (memeImage) {
             memeImage.src = memePaths[currentMemeIndex];
@@ -193,19 +200,45 @@
         // Vaciar el contenido del textarea
         document.getElementById("userText").value = "";
 
-        // Ocultar el botón actual y mostrar el nuevo botón cuando currentMemeIndex sea 4
-        if (currentMemeIndex === 4) {
+        // Ocultar el botón actual y mostrar el nuevo botón cuando currentMemeIndex sea 5
+        if (currentMemeIndex === 5) {
             document.getElementById("sendButton").style.display = "none";
             document.getElementById("textito").style.display = "none";
             document.getElementById("userText").style.display = "none";
             document.getElementById("randomMeme").style.display = "none";
             document.getElementById("irAnuevaPagina").style.display = "block";
+
+            // Habilitar o deshabilitar el botón basado en el nombre del jugador
+            const irAnuevaPaginaButton = document.getElementById("irAnuevaPaginaButton");
+            if (playerName !== creatorName) {
+                irAnuevaPaginaButton.disabled = true;
+            } else {
+                irAnuevaPaginaButton.disabled = false;
+            }
         }
     }
 
-    // Función para la nueva funcionalidad del nuevo botón
-    function irAlaVotacion() {
-        // Aquí puedes agregar la funcionalidad del nuevo botón
-        alert("Nueva funcionalidad activada");
+    function FinishGame(event) {
+        event.preventDefault();
+        connection.invoke("FinishGame", roomCode).then(() => {
+            console.log("Juego iniciado");
+            window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    }
+
+    function checkGameStarted() {
+        connection.invoke("IsGameFinish", roomCode).then(isStarted => {
+            if (isStarted) {
+                window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+            }
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    }
+    // Comprobar si el juego ha comenzado cada 5 segundos
+    if (playerName !== creatorName) {
+        setInterval(checkGameStarted, 3000);
     }
 </script>

@@ -15,6 +15,7 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string MemePath3 { get; private set; }
         public string MemePath4 { get; private set; }
         public string MemePath5 { get; private set; }
+        public string CreatorName { get; private set; }
         //[BindProperty]
         public string UserText { get; set; }
         public string RoomCode { get; set; }
@@ -30,12 +31,14 @@ namespace QuizClash_Arena_Multimedia.Pages
             PlayerAvatar = playerAvatar;
             currentRound = 0;
             LoadRoomFromJson(roomCode);
-            if (IsRoomCreator() && !CurrentRoom.Rounds.Any())
+            CreatorName = CurrentRoom.CreatedBy.Name;
+            if (CreatorName == PlayerName && !CurrentRoom.Rounds.Any())
             {
                 CreateRounds();
                 SaveRoomToJson();
             }
             CurrentRoom = LoadRoomFromJson(roomCode);
+            CreatorName = CurrentRoom.CreatedBy.Name;
             MemePath1 = CurrentRoom.Rounds[0].MemePath;
             MemePath2 = CurrentRoom.Rounds[1].MemePath;
             MemePath3 = CurrentRoom.Rounds[2].MemePath;
@@ -140,10 +143,6 @@ namespace QuizClash_Arena_Multimedia.Pages
             }
 
             return memes;
-        }
-        private bool IsRoomCreator()
-        {
-            return CurrentRoom.CreatedBy.Name == PlayerName && CurrentRoom.CreatedBy.Avatar == PlayerAvatar;
         }
     }
 }
