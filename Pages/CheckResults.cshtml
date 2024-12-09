@@ -96,6 +96,7 @@
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
+            display: none; /* Ocultar inicialmente */
         }
     </style>
 
@@ -130,6 +131,7 @@
     </div>
     <div class="mt-4">
         <button id="playGameButton" class="btn btn-success">¡Inicia votación en twitch!</button>
+        <button id="enableVotingButton" class="btn btn-primary">Habilitar votaciones locales</button>
     </div>
 
     <!-- Incluir jQuery antes de SignalR -->
@@ -139,6 +141,7 @@
     <script>
         const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
             connection.start().catch(err => console.error("Error de conexión: ", err));
+
                 document.getElementById("playGameButton").addEventListener("click", function () {
                     const roomCode = '@Model.RoomCode';
                     const playerName = '@Model.PlayerName';
@@ -149,6 +152,11 @@
 
                     // Redirigir a la URL construida
                     window.location.href = url;
+                });
+
+                document.getElementById("enableVotingButton").addEventListener("click", function () {
+                    const voteButtons = document.querySelectorAll('.vote-button');
+                    voteButtons.forEach(button => button.style.display = 'inline-block');
                 });
 
                 function vote(button, playerName, response, roundNumber) {
@@ -163,6 +171,5 @@
                         console.error(err.toString());
                     });
                 }
-
     </script>
 }
