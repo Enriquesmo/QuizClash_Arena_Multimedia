@@ -130,8 +130,14 @@
         }
     </div>
     <div class="mt-4">
-        <button id="playGameButton" class="btn btn-success">¡Inicia votación en twitch!</button>
+        @if (Model.Twitch?.Equals("True", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            <button id="playGameButton" class="btn btn-success">¡Inicia votación en twitch!</button>
+        }
+        @if (Model.Twitch?.Equals("False", StringComparison.OrdinalIgnoreCase) == true)
+        {
         <button id="enableVotingButton" class="btn btn-primary">Habilitar votaciones locales</button>
+        }
     </div>
 
     <!-- Incluir jQuery antes de SignalR -->

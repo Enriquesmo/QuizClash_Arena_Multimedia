@@ -208,7 +208,7 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
         //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
 
-    return Results.Redirect($"/Login_Twitch?auth={auth}");
+    return Results.Redirect($"/Login_Twitch?auth={auth}&Twitch=True");
 });
 app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clientFactory, TwitchApiService twitchApiService) =>
 {
@@ -230,7 +230,7 @@ app.MapGet("/start-stream", async (HttpContext context, IHttpClientFactory clien
         );
 
         // Redirigir a la página Key_transmision con la clave como parámetro
-        return Results.Redirect($"/Key_transmision?streamKey={streamKey}&broadcasterId={broadcasterId}");
+        return Results.Redirect($"/Key_transmision?streamKey={streamKey}&broadcasterId={broadcasterId}&Twitch=True");
     }
     catch (Exception ex)
     {

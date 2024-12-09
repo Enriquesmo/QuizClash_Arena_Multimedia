@@ -135,11 +135,12 @@
 </style>
 
 <div class="container">
+    
     <h1>Crear Partida</h1>
     <h2>Selecciona el número de jugadores:</h2>
     <form method="post" asp-page-handler="CreateGame" id="createGameForm">
         <input type="hidden" id="webSocketId" name="WebSocketId" />
-
+        <input type="hidden" asp-for="Twitch" />
         <!-- Selección del número de jugadores -->
         <div class="players-gallery">
             @for (int i = 2; i <= 6; i++)
@@ -171,6 +172,9 @@
 
         <!-- Botón de envío -->
         <button type="submit">Crear Sala</button>
+        
+      
+
     </form>
 </div>
 

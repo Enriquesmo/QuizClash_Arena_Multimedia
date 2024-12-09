@@ -14,9 +14,10 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string PlayerName { get; set; }
         public string PlayerAvatar { get; set; }
         public Room CurrentRoom { get; set; }
-
+        public string Twitch { get; set; }
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
+            Twitch = Request.Query["twitch"];
             RoomCode = roomCode;
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;

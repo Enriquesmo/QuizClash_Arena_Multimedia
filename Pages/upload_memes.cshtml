@@ -215,7 +215,8 @@
             const roomCode = '@Model.RoomCode';
             const playerName = '@Model.PlayerName';
             const playerAvatar = '@Model.PlayerAvatar';
-            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+            const twitch = '@Model.Twitch';
+            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${twitch}`;
         });
 
     </script>
@@ -247,7 +248,8 @@
             const roomCode = '@Model.RoomCode';
             const playerName = '@Model.PlayerName';
             const playerAvatar = '@Model.PlayerAvatar';
-            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+            const twitch = '@Model.Twitch';
+            window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${twitch}`;
         }
 
         // Llama a updateTimer cada segundo

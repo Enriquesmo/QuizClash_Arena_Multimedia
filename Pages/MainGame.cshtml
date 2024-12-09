@@ -207,7 +207,7 @@
     const playerName = "@Model.PlayerName";
     const creatorName = "@Model.CreatorName";
     const playerAvatar = "@Model.PlayerAvatar"
-
+    const twitch = '@Model.Twitch';
     const memePaths = [
         '@Model.MemePath1',
         '@Model.MemePath2',
@@ -255,7 +255,7 @@
         event.preventDefault();
         connection.invoke("FinishGame", roomCode).then(() => {
             console.log("Juego iniciado");
-            window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+            window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${twitch}`;
         }).catch(function (err) {
             console.error(err.toString());
         });
@@ -264,7 +264,7 @@
     function checkGameStarted() {
         connection.invoke("IsGameFinish", roomCode).then(isStarted => {
             if (isStarted) {
-                window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+                window.location.href = `CheckResults?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${twitch}`;
             }
         }).catch(function (err) {
             console.error(err.toString());

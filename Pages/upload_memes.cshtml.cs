@@ -25,15 +25,17 @@ namespace QuizClash_Arena_Multimedia.Pages
         public List<IFormFile> Files { get; set; }
 
         public int NumPlayers { get; set; }
-
+        public string Twitch { get; set; }
         public upload_memesModel(IHubContext<GameHub> hubContext, IHostApplicationLifetime applicationLifetime)
         {
             _hubContext = hubContext;
             _applicationLifetime = applicationLifetime;
         }
-
+        
+        
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
+            Twitch = Request.Query["twitch"];
             RoomCode = roomCode;
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;

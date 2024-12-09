@@ -87,17 +87,41 @@
 
 <div id="options" style="display:none;">
     <h2>Selecciona una opción:</h2>
-    <form method="get" asp-page="Login_Twitch">
-        <button type="submit">Crear una partida con Twitch</button>
-    </form>
-    <form method="get" asp-page="Create_game">
-        <button type="submit">Crear una partida sin Twitch</button>
-    </form>
+    <button id="playGameButtonConTwitch" class="btn btn-success">Crear una partida con Twitch</button>
+
+    <button id="playGameButtonSinTwitch" class="btn btn-success">Crear una partida sin Twitch</button>
+       
+
     <form method="get" asp-page="JoinGame">
         <button type="submit">Unirse a una partida</button>
     </form>
 </div>
 
+
+<script>
+    // Redirige al archivo '/start-chat-poll' con los parámetros al hacer clic en el botón
+    document.getElementById("playGameButtonConTwitch").addEventListener("click", function () {
+        
+
+        // Construir la URL con los parámetros
+        const url = `/Login_Twitch?Twitch=True`;
+
+        // Redirigir a la URL construida
+        window.location.href = url;
+    });
+</script>
+<script>
+    // Redirige al archivo '/start-chat-poll' con los parámetros al hacer clic en el botón
+    document.getElementById("playGameButtonSinTwitch").addEventListener("click", function () {
+
+
+        // Construir la URL con los parámetros
+        const url = `/Create_game?Twitch=False`;
+
+        // Redirigir a la URL construida
+        window.location.href = url;
+    });
+</script>
 <script>
     document.getElementById("playButton").addEventListener("click", function () {
         document.getElementById("options").style.display = "block";

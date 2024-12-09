@@ -92,10 +92,21 @@
 
     <!-- Botón "¡A jugar!" -->
     <div class="play-button-container">
-        <a href="/Create_game" class="play-button">¡A jugar!</a>
+        <button id="playGameButtonConTwitch" class="btn btn-success">¡A jugar!</button>
     </div>
 </div>
+<script>
+    // Redirige al archivo '/start-chat-poll' con los parámetros al hacer clic en el botón
+    document.getElementById("playGameButtonConTwitch").addEventListener("click", function () {
 
+
+        // Construir la URL con los parámetros
+        const url = `/Create_game?Twitch=True`;
+
+        // Redirigir a la URL construida
+        window.location.href = url;
+    });
+</script>
 <style>
     /* Resto del estilo permanece igual */
 

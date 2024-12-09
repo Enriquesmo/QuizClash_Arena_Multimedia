@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 using QuizClash_Arena_Multimedia.Models;
+using System.Reflection;
 
 namespace QuizClash_Arena_Multimedia.Pages
 {
@@ -19,9 +20,16 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string PlayerAvatar { get; set; }
         [BindProperty]
         public string WebSocketId { get; set; } // Nuevo campo para el WebSocketId
-
+        [BindProperty]
+        public string Twitch { get; set; }
+        public void OnGet()
+        {
+      
+            Twitch = Request.Query["Twitch"]; 
+        }
         public IActionResult OnPost()
         {
+           
             // Generar un RoomCode de 6 cifras aleatorias
             RoomCode = new Random().Next(100000, 999999).ToString();
 
@@ -45,7 +53,7 @@ namespace QuizClash_Arena_Multimedia.Pages
             System.IO.File.WriteAllText(roomFilePath, roomJson);
 
             // Redirigir a la sala de espera con los datos del creador
-            return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
+            return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar, twitch = Twitch });
         }
     }
 }
