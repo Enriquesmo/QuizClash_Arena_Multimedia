@@ -258,6 +258,28 @@ namespace QuizClash_Arena_Multimedia.Hubs
 
             return roomDetails;
         }
+        public async Task VotarRespuesta(string roomCode, int roundNumber, string playerName, string response)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+
+                var round = roomData.Rounds[roundNumber];
+                var answer = round.Answers.FirstOrDefault(a => a.PlayerName == playerName && a.Response == response);
+
+                if (answer != null)
+                {
+                    answer.votos++;
+                    roomData.Players[roomData.Players.FindIndex(p => p.Name == playerName)].votos++;
+                    var updatedJson = JsonSerializer.Serialize(roomData, new JsonSerializerOptions { WriteIndented = true });
+                    await File.WriteAllTextAsync(roomFilePath, updatedJson);
+                }
+            }
+        }
+
 
         // ====================================================================
         // Métodos de gestión del juego

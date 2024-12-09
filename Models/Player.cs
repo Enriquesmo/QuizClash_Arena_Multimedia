@@ -5,6 +5,7 @@
         public string Name { get; set; }
         public string Avatar { get; set; }
         public string WebSocketId { get; set; }
+        public int votos { get; set; }
 
         // Constructor sin parámetros necesario para la deserialización
         public Player() { }
@@ -18,6 +19,7 @@
             Name = name;
             Avatar = avatar;
             WebSocketId = websocket;
+            votos = 0;
         }
     }
 }

@@ -68,7 +68,6 @@
 
         .answers {
             margin-top: 15px;
-            max-height: 150px;
             overflow-y: auto;
             padding: 10px;
             background: rgba(0, 0, 0, 0.4);
@@ -88,6 +87,16 @@
                 margin: 0;
                 font-size: 1rem;
             }
+
+        .vote-button {
+            margin-top: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 
     <div class="player-info">
@@ -99,15 +108,20 @@
     </div>
 
     <div class="rounds-container">
-        @foreach (var round in @Model.CurrentRoom.Rounds)
+        @for (int i = 0; i < @Model.CurrentRoom.Rounds.Count; i++)
         {
-            <div class="round-container">
+            var round = @Model.CurrentRoom.Rounds[i];
+            <div class="round-container" data-round-number="@i">
                 <img src="@round.MemePath" alt="Meme" class="round-image" />
                 <div class="answers">
                     @foreach (var answer in round.Answers)
                     {
                         <div class="answer">
                             <p><strong>@answer.PlayerName:</strong> @answer.Response</p>
+                            @if (answer.PlayerName != @Model.PlayerName)
+                            {
+                                <button class="vote-button" onclick="vote(this, '@answer.PlayerName', '@answer.Response', @i)">Votar</button>
+                            }
                         </div>
                     }
                 </div>
@@ -118,18 +132,37 @@
         <button id="playGameButton" class="btn btn-success">¡Inicia votación en twitch!</button>
     </div>
 
+    <!-- Incluir jQuery antes de SignalR -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+
     <script>
-        // Redirige al archivo '/start-chat-poll' con los parámetros al hacer clic en el botón
-        document.getElementById("playGameButton").addEventListener("click", function () {
-            const roomCode = '@Model.RoomCode';
-            const playerName = '@Model.PlayerName';
-            const playerAvatar = '@Model.PlayerAvatar';
+        const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+            connection.start().catch(err => console.error("Error de conexión: ", err));
+                document.getElementById("playGameButton").addEventListener("click", function () {
+                    const roomCode = '@Model.RoomCode';
+                    const playerName = '@Model.PlayerName';
+                    const playerAvatar = '@Model.PlayerAvatar';
 
-            // Construir la URL con los parámetros
-            const url = `/start-chat-poll?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
+                    // Construir la URL con los parámetros
+                    const url = `/start-chat-poll?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}`;
 
-            // Redirigir a la URL construida
-            window.location.href = url;
-        });
+                    // Redirigir a la URL construida
+                    window.location.href = url;
+                });
+
+                function vote(button, playerName, response, roundNumber) {
+                    const roundContainer = button.closest('.round-container');
+                    const voteButtons = roundContainer.querySelectorAll('.vote-button');
+                    voteButtons.forEach(btn => btn.style.display = 'none');
+
+                    const roomCode = '@Model.RoomCode';
+                    connection.invoke("VotarRespuesta", roomCode, roundNumber, playerName, response).then(() => {
+                        console.log(`Response: ${playerName} - ${response}, Round: ${roundNumber}, Room Code: ${roomCode}`);
+                    }).catch(function (err) {
+                        console.error(err.toString());
+                    });
+                }
+
     </script>
 }

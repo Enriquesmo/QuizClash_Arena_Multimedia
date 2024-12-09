@@ -221,10 +221,10 @@
     }
 
     // Recargar la lista de jugadores cada 5 segundos
-    setInterval(updatePlayerList, 5000);
+    setInterval(updatePlayerList, 1000);
 
     // Comprobar si el juego ha comenzado cada 5 segundos
     if (playerName !== "@Model.CurrentRoom.CreatedBy.Name") {
-        setInterval(checkGameStarted, 3000);
+        setInterval(checkGameStarted, 1000);
     }
 </script>
