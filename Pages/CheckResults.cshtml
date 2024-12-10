@@ -266,7 +266,7 @@
                     clearInterval(countdownInterval);
                     //window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${@Model.Twitch}`;
 
-                    window.location.href = `/winning_result?twitch=${encodeURIComponent('@Model.Twitch')}`;
+                    window.location.href = `/winning_result?twitch=${encodeURIComponent('@Model.Twitch')}&roomCode=${encodeURIComponent('@Model.RoomCode')}`;
                 } else {
                     countdownElement.textContent = `Tiempo restante: ${timeLeft} segundos`;
                     timeLeft--;

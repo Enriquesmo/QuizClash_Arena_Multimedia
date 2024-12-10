@@ -29,6 +29,9 @@ namespace QuizClash_Arena_Multimedia.Pages
             //CreatorName = CurrentRoom.CreatedBy.Name;
             //this.Twitch = Twitch ?? false;
             Winner = Request.Query["resultWin"]; // Puedes cambiar esta línea para obtener datos dinámicos.
+            RoomCode = Request.Query["roomCode"];
+            Console.WriteLine(Winner);
+            Console.WriteLine(RoomCode);
         }
 
         private Room LoadRoomFromJson(string roomCode)
