@@ -46,9 +46,16 @@ namespace QuizClash_Arena_Multimedia.Pages
                 JsonElement root = document.RootElement;
                 int numPlayers = root.GetProperty("NumPlayers").GetInt32();
                 var playersJSON = root.GetProperty("Players");
+                foreach (JsonElement player in playersJSON.EnumerateArray())
+                {
+                    string existingPlayerName = player.GetProperty("Name").GetString();
+                    if (string.Equals(existingPlayerName, PlayerName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return Page();
+                    }
+                }
                 if (playersJSON.GetArrayLength() >= numPlayers)
                 {
-                    ModelState.AddModelError(string.Empty, "La sala ya está llena.");
                     return Page();
                 }
                 // Crear el nuevo jugador como un JsonObject

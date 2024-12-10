@@ -1,26 +1,26 @@
 {
-  "RoomCode": "611958",
+  "RoomCode": "334116",
   "NumPlayers": 2,
   "CreatedBy": {
-    "Name": "H",
+    "Name": "q",
     "Avatar": "/images/avatars/avatar_1.png",
-    "WebSocketId": "vmC7fNKjc8QQqZFhdV_cRg",
+    "WebSocketId": "uRU5VHzkER-IDTt__y5x4g",
     "votos": 0
   },
   "Players": [
     {
-      "Name": "H",
+      "Name": "q",
       "Avatar": "/images/avatars/avatar_1.png",
-      "WebSocketId": "vmC7fNKjc8QQqZFhdV_cRg",
+      "WebSocketId": "uRU5VHzkER-IDTt__y5x4g",
       "votos": 0
     },
     {
-      "Name": "SWEW",
-      "Avatar": "/images/avatars/avatar_4.png",
-      "WebSocketId": "F8g9eKQ1yB9ZfuX8aQvNVw"
+      "Name": "w",
+      "Avatar": "/images/avatars/avatar_1.png",
+      "WebSocketId": "JUKNOivFo6x2HBdLxLcaVg"
     }
   ],
-  "CreatedAt": "2024-12-10T18:10:33.4957242\u002B01:00",
+  "CreatedAt": "2024-12-10T18:18:25.4753158\u002B01:00",
   "Rounds": [],
   "GameStarted": false,
   "CurrentRound": 0,
