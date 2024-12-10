@@ -73,21 +73,33 @@
         }
 
     /* Botón de subir */
-    button {
+    .btn {
+        display: inline-block;
         font-size: 1.5rem;
         padding: 12px 25px;
-        background-color: #ff4500;
         color: white;
         border: none;
         border-radius: 15px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.3s;
+        background-color: #ff4500;
     }
 
-        button[type="submit"]:hover {
+    .btn-primary {
+        background-color: #ff4500; 
+    }
+
+        .btn-primary:hover {
             background-color: #ff3366;
             transform: scale(1.1);
         }
+
+    .mt-3 {
+        margin-top: 1rem; /* Ajusta según sea necesario */
+    }
+
+
+   
 
     /* Imágenes cargadas */
     #uploadedMemes {
@@ -170,6 +182,12 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         z-index: 1000;
         animation: fadeInOut 3s;
+    }
+
+    .btn:focus {
+        background-color: #ff4500; 
+        transform: none; 
+        outline: none; 
     }
 </style>
 

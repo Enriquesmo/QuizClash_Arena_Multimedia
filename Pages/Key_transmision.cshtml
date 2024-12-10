@@ -85,14 +85,14 @@
         {
             <div class="image-item">
                 <img src="/images/fotos_token/@($"{i}.jpeg")" alt="Foto @i" />
-                <p>Identificador: @i</p>
+                <p>@i</p>
             </div>
         }
     </div>
 
     <!-- Botón "¡A jugar!" -->
-    <div class="play-button-container">
-        <button id="playGameButtonConTwitch" class="btn btn-success">¡A jugar!</button>
+    <div>
+        <button id="playGameButtonConTwitch" class="btn play-button ">¡A jugar!</button>
     </div>
 </div>
 <script>
@@ -120,8 +120,8 @@
         padding: 15px 30px;
         font-size: 1.5em;
         font-weight: bold;
-        color: white; /* Texto blanco por defecto */
-        background-color: #ff4500; /* Naranja oscuro */
+        color: white; 
+        background-color: #ff4500;
         border: none;
         border-radius: 10px;
         text-decoration: none;
