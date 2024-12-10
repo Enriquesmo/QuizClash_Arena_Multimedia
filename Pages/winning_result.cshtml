@@ -91,4 +91,50 @@
     <div class="play-button-container">
         <a href="/Index" class="play-button">Continuar</a>
     </div>
+    <form method="get" id="irAnuevaPagina" asp-page="CheckResults" onsubmit="VotingGame(event)" style="display: block;">
+        <button id="enableVotingButton" type="submit" class="start-game-button">
+            Mostrar los resultados
+        </button>
+    </form>
 </div>
+<script>
+    const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+    connection.start().catch(err => console.error("Error de conexión: ", err));
+    function VotingGame(event) {
+        event.preventDefault();
+        const roomCode = '@Model.RoomCode';
+        connection.invoke("FinishVotingGame", roomCode).then(() => {
+            console.log("Juego de votación iniciado");
+            
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+    }
+    let already = false;
+    function checkGameVoting() {
+        if (already) {
+            return;
+        } else {
+            const roomCode = '@Model.RoomCode';
+            connection.invoke("IsFinishVotingGame", roomCode).then(isStarted => {
+                if (isStarted) {
+                    already = true;
+                    const voteButtons = document.querySelectorAll('.vote-button');
+                    voteButtons.forEach(button => {
+                        button.style.display = 'inline-block';
+                        console.log("Botón de votación mostrado");
+                    });
+                }
+            }).catch(function (err) {
+                console.error(err.toString());
+            });
+        }
+    }
+
+    // Comprobar si el juego ha comenzado cada 5 segundos
+    const playerName = '@Model.PlayerName';
+    const creatorName = '@Model.CreatorName';
+    if (playerName !== creatorName) {
+        setInterval(checkGameVoting, 1000);
+    }
+</script>

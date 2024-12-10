@@ -98,6 +98,18 @@
             cursor: pointer;
             display: none; /* Ocultar inicialmente */
         }
+
+        #countdown {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+        }
     </style>
 
     <div class="player-info">
@@ -144,13 +156,15 @@
         }
     </div>
 
+    <div id="countdown"></div>
+
     <!-- Incluir jQuery antes de SignalR -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 
     <script>
-    const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
-    connection.start().catch(err => console.error("Error de conexión: ", err));
+        const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+        connection.start().catch(err => console.error("Error de conexión: ", err));
         document.addEventListener("DOMContentLoaded", function () {
             const playGameButton = document.getElementById("playGameButton");
             if (playGameButton) {
@@ -172,13 +186,14 @@
                 enableVotingButton.addEventListener("click", function (event) {
                     event.preventDefault();
                     console.log("Botón de habilitar votaciones locales clicado");
-                    enableVotingButton.style.display = 'none'; 
+                    enableVotingButton.style.display = 'none';
                     const voteButtons = document.querySelectorAll('.vote-button');
                     voteButtons.forEach(button => {
                         button.style.display = 'inline-block';
                         console.log("Botón de votación mostrado");
                     });
                     VotingGame(event);
+                    startCountdown();
                 });
             }
 
@@ -186,6 +201,9 @@
             if (form) {
                 form.addEventListener("submit", VotingGame);
             }
+
+            // Iniciar el contador para todos los jugadores
+            startCountdown();
         });
 
         function vote(button, playerName, response, roundNumber) {
@@ -214,7 +232,7 @@
         function checkGameVoting() {
             if (already) {
                 return;
-            }else{
+            } else {
                 const roomCode = '@Model.RoomCode';
                 connection.invoke("IsVotingGame", roomCode).then(isStarted => {
                     if (isStarted) {
@@ -231,15 +249,29 @@
             }
         }
 
-
         // Comprobar si el juego ha comenzado cada 5 segundos
         const playerName = '@Model.PlayerName';
         const creatorName = '@Model.CreatorName';
         if (playerName !== creatorName) {
             setInterval(checkGameVoting, 1000);
         }
+
+        // Función para iniciar el contador de 1 minuto
+        function startCountdown() {
+            let timeLeft = 60;
+            const countdownElement = document.getElementById('countdown');
+
+            const countdownInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    //window.location.href = `@Url.Page("MainGame")?roomCode=${roomCode}&playerName=${playerName}&playerAvatar=${playerAvatar}&twitch=${@Model.Twitch}`;
+
+                    window.location.href = `/winning_result?twitch=${encodeURIComponent('@Model.Twitch')}`;
+                } else {
+                    countdownElement.textContent = `Tiempo restante: ${timeLeft} segundos`;
+                    timeLeft--;
+                }
+            }, 1000);
+        }
     </script>
-
-
-
 }

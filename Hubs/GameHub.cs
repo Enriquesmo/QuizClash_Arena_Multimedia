@@ -240,6 +240,34 @@ namespace QuizClash_Arena_Multimedia.Hubs
             return false;
         }
 
+        public async Task FinishVotingGame(string roomCode)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                roomData.FinishVoting = true;
+                var updatedJson = JsonSerializer.Serialize(roomData, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(roomFilePath, updatedJson);
+            }
+        }
+
+
+        public async Task<bool> IsFinishVotingGame(string roomCode)
+        {
+            string roomFilePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
+
+            if (File.Exists(roomFilePath))
+            {
+                var roomJson = await File.ReadAllTextAsync(roomFilePath);
+                var roomData = JsonSerializer.Deserialize<Room>(roomJson);
+                return roomData?.FinishVoting ?? false;
+            }
+            return false;
+        }
+
         public async Task<List<Player>> GetPlayersInRoom(string roomCode)
         {
             var filePath = Path.Combine(RoomsDirectory, $"{roomCode}.json");
