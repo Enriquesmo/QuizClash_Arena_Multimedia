@@ -18,36 +18,78 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string CreatorName { get; private set; }
         public string? Winner { get; set; }
 
-        public void OnGet(string? roomCode, string? playerName, string? playerAvatar, bool? Twitch)
-        {
-            // Lógica para obtener el ganador
 
-            //RoomCode = roomCode;
-            //PlayerName = playerName;
-            //PlayerAvatar = playerAvatar;
-            //CurrentRoom = LoadRoomFromJson(roomCode);
-            //CreatorName = CurrentRoom.CreatedBy.Name;
-            //this.Twitch = Twitch ?? false;
-            Winner = Request.Query["resultWin"]; // Puedes cambiar esta línea para obtener datos dinámicos.
-            RoomCode = Request.Query["roomCode"];
-            Console.WriteLine(Winner);
-            Console.WriteLine(RoomCode);
-        }
 
-        private Room LoadRoomFromJson(string roomCode)
-        {
-            var filePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
-            if (System.IO.File.Exists(filePath))
+            public void OnGet(string? roomCode, string? playerName, string? playerAvatar, bool? Twitch)
             {
-                var json = System.IO.File.ReadAllText(filePath);
-                CurrentRoom = JsonSerializer.Deserialize<Room>(json);
-                return CurrentRoom;
+                Winner = Request.Query["resultWin"];
+                RoomCode = Request.Query["roomCode"];
+
+                if (RoomCode != null)
+                {
+                    CurrentRoom = LoadRoomFromJson(RoomCode);
+                    if (CurrentRoom != null)
+                    {
+                        if (!string.IsNullOrEmpty(Winner))
+                        {
+                            // Caso 1: Guardar resultWin en ganador
+                            CurrentRoom.ganador = Winner;
+                            SaveRoomToJson();
+                        }
+                        else if (!string.IsNullOrEmpty(CurrentRoom.ganador))
+                        {
+                            // Caso 2: Consultar CurrentRoom.ganador
+                            Winner = CurrentRoom.ganador;
+                        }
+                        else
+                        {
+                            // Caso 3 y 4: Comparar puntuaciones y determinar ganador o empate
+                            var players = CurrentRoom.Players;
+                            if (players != null && players.Count > 0)
+                            {
+                                var maxVotes = players.Max(p => p.votos);
+                                var winners = players.Where(p => p.votos == maxVotes).ToList();
+
+                                if (winners.Count == 1)
+                                {
+                                    Winner = winners.First().Name;
+                                }
+                                else
+                                {
+                                    Winner = "Empate entre: " + string.Join(", ", winners.Select(p => p.Name));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Console.WriteLine(Winner);
             }
-            else
+
+            private Room LoadRoomFromJson(string roomCode)
             {
-                Console.WriteLine("No se encontró el archivo de la sala");
-                return null;
+                var filePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
+                if (System.IO.File.Exists(filePath))
+                {
+                    var json = System.IO.File.ReadAllText(filePath);
+                    CurrentRoom = JsonSerializer.Deserialize<Room>(json);
+                    return CurrentRoom;
+                }
+                else
+                {
+                    Console.WriteLine("No se encontró el archivo de la sala");
+                    return null;
+                }
+            }
+
+            private void SaveRoomToJson()
+            {
+                var filePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");
+                var json = JsonSerializer.Serialize(CurrentRoom, new JsonSerializerOptions { WriteIndented = true });
+                System.IO.File.WriteAllText(filePath, json);
             }
         }
     }
-}
+
+
+
