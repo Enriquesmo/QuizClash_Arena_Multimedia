@@ -24,19 +24,18 @@ namespace QuizClash_Arena_Multimedia.Pages
             {
                 Winner = Request.Query["resultWin"];
                 RoomCode = Request.Query["roomCode"];
-
                 if (RoomCode != null)
                 {
                     CurrentRoom = LoadRoomFromJson(RoomCode);
                     if (CurrentRoom != null)
                     {
-                        if (!string.IsNullOrEmpty(Winner))
+                        /*if (!string.IsNullOrEmpty(Winner))
                         {
                             // Caso 1: Guardar resultWin en ganador
                             CurrentRoom.ganador = Winner;
                             SaveRoomToJson();
-                        }
-                        else if (!string.IsNullOrEmpty(CurrentRoom.ganador))
+                        }*/
+                        if (!string.IsNullOrEmpty(CurrentRoom.ganador))
                         {
                             // Caso 2: Consultar CurrentRoom.ganador
                             Winner = CurrentRoom.ganador;
@@ -84,6 +83,9 @@ namespace QuizClash_Arena_Multimedia.Pages
 
             private void SaveRoomToJson()
             {
+                Console.WriteLine("Guardando sala en archivo JSON");
+                Console.WriteLine(CurrentRoom.ganador);
+                Console.WriteLine(Winner);
                 var filePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");
                 var json = JsonSerializer.Serialize(CurrentRoom, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(filePath, json);

@@ -3,6 +3,8 @@ using System.Text.Json;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Client;
+using System.Reflection;
+using QuizClash_Arena_Multimedia.Models;
 
 public class TwitchChatService
 {
@@ -95,11 +97,12 @@ public class TwitchChatService
             {
                 winnerMessage = $"Ganador: {winners.First()}";
             }
-
-
             await Task.Delay(1500);
             _client.SendMessage(_client.JoinedChannels[0], winnerMessage);
-
+            //room.ganador = winnerMessage;
+            LoadRoomFromJson(_roomCode);
+            CurrentRoom.ganador = winnerMessage;
+            SaveRoomToJson(_roomCode);
             return winnerMessage; // Devolver el resultado
         }
         catch (Exception ex)
@@ -111,6 +114,31 @@ public class TwitchChatService
         {
             _client.Disconnect();
         }
+    }
+    public Room CurrentRoom { get; set; }
+
+    private Room LoadRoomFromJson(string roomCode)
+    {
+        var filePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
+        if (System.IO.File.Exists(filePath))
+        {
+            var json = System.IO.File.ReadAllText(filePath);
+            CurrentRoom = JsonSerializer.Deserialize<Room>(json);
+            return CurrentRoom;
+        }
+        else
+        {
+            Console.WriteLine("No se encontró el archivo de la sala");
+            return null;
+        }
+    }
+
+    private void SaveRoomToJson(string RoomCode)
+    {
+        Console.WriteLine("Guardando sala en archivo JSON");
+        var filePath = Path.Combine("Data", "Rooms", $"{RoomCode}.json");
+        var json = JsonSerializer.Serialize(CurrentRoom, new JsonSerializerOptions { WriteIndented = true });
+        System.IO.File.WriteAllText(filePath, json);
     }
 
 
@@ -135,21 +163,5 @@ public class TwitchChatService
         {
             throw new Exception("Error obteniendo el nombre de usuario desde Twitch.", ex);
         }
-    }
-
-    public class Room
-    {
-        public string RoomCode { get; set; }
-        public int NumPlayers { get; set; }
-        public Player CreatedBy { get; set; }
-        public List<Player> Players { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public List<Round> Rounds { get; set; }
-        public bool GameStarted { get; set; }
-    }
-
-    public class Player
-    {
-        public string Name { get; set; }
     }
 }
