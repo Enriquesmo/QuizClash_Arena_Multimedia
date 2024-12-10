@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/QuizClash_Arena_Multimedia.styles.css" asp-append-version="true" />
     <style>
-        /* Ajuste para mover el icono más a la izquierda y animación hover */
         .navbar-icon {
             margin-left: 10px; 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -53,7 +52,7 @@
 
 <style>
     #backgroundMusic {
-        display: none; /* Oculta el reproductor de audio */
+        display: none; 
     }
 </style>
 
@@ -61,19 +60,15 @@
     document.addEventListener("DOMContentLoaded", function () {
         const music = document.getElementById("backgroundMusic");
 
-        // Configurar volumen
         music.volume = 0.5;
 
-        // Recuperar tiempo de reproducción si existe
         const savedTime = localStorage.getItem("musicCurrentTime");
         if (savedTime) {
             music.currentTime = parseFloat(savedTime);
         }
 
-        // Reproducir automáticamente
         music.play();
 
-        // Guardar el tiempo de reproducción al cambiar de página
         window.addEventListener("beforeunload", function () {
             localStorage.setItem("musicCurrentTime", music.currentTime);
         });

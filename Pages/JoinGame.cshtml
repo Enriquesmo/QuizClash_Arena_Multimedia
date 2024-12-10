@@ -18,14 +18,14 @@
 
     .container {
         text-align: center;
-        margin: 30px auto; /* Reduce el margen superior e inferior */
+        margin: 30px auto; 
         padding: 10px;
-        max-width: 800px; /* Aumenta el ancho máximo */
-        height: auto; /* Ajusta automáticamente la altura */
+        max-width: 800px; 
+        height: auto; 
         background: rgba(0, 0, 0, 0.6);
         border-radius: 15px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        overflow-y: auto; /* Agrega scroll interno si el contenido excede */
+        overflow-y: auto; 
     }
 
     h1 {
@@ -64,22 +64,22 @@
 
     .avatar-selection {
         display: flex;
-        justify-content: center; /* Centra los avatares horizontalmente */
-        gap: 10px; /* Reduce el espacio entre los avatares */
-        flex-wrap: nowrap; /* Evita que se envuelvan en filas */
-        overflow-x: auto; /* Agrega desplazamiento horizontal si los avatares exceden el ancho del contenedor */
-        padding: 10px 0; /* Agrega un poco de espacio arriba y abajo */
+        justify-content: center; 
+        gap: 10px;
+        flex-wrap: nowrap; 
+        overflow-x: auto; 
+        padding: 10px 0; 
     }
 
     .avatar-option {
         position: relative;
-        width: 80px; /* Tamaño de los avatares */
+        width: 80px; 
         height: 80px;
         display: flex;
         justify-content: center;
         align-items: center;
         background-color: rgba(255, 255, 255, 0.1);
-        border: 3px solid transparent; /* Sin borde al principio */
+        border: 3px solid transparent; 
         border-radius: 50%;
         cursor: pointer;
         transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
@@ -92,13 +92,13 @@
         }
 
         .avatar-option:hover {
-            transform: scale(1.1); /* Efecto al pasar el mouse */
+            transform: scale(1.1); 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
             background-color: rgba(255, 255, 255, 0.2);
         }
 
         .avatar-option.selected {
-            border-color: #ffcc00; /* Resalta el avatar seleccionado */
+            border-color: #ffcc00; 
             background-color: rgba(255, 204, 0, 0.2);
         }
 
@@ -172,10 +172,8 @@
         const avatarInput = document.getElementById("playerAvatar");
         const selectedAvatar = element.parentElement.getAttribute("data-avatar");
 
-        // Asignar valor del avatar seleccionado
         avatarInput.value = selectedAvatar;
 
-        // Ocultar mensaje de error si ya se seleccionó un avatar
         const errorMessage = document.getElementById("error-message");
         if (errorMessage.style.display === "block") {
             errorMessage.style.display = "none";
@@ -188,12 +186,10 @@
         const errorMessage = document.getElementById("error-message");
 
         if (!playerAvatar || playerAvatar === "") {
-            // Mostrar mensaje de error si no hay avatar seleccionado
             errorMessage.style.display = "block";
-            return false; // Evitar que el formulario se envíe
+            return false; 
         }
 
-        // Permitir que el formulario se envíe
         return true;
     }
 </script>
@@ -218,16 +214,12 @@
     // Selección de avatar
     document.querySelectorAll('.avatar-option').forEach(option => {
         option.addEventListener('click', function () {
-            // Quitar selección de todos los avatares
             document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-            // Marcar el avatar seleccionado
             this.classList.add('selected');
 
-            // Actualizar el campo oculto con la URL del avatar seleccionado
             const avatarUrl = this.getAttribute('data-avatar');
             document.getElementById('playerAvatar').value = avatarUrl;
 
-            // Ya no necesitamos mostrar la vista previa, por lo que eliminamos esa parte.
         });
     });
 

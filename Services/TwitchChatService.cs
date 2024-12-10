@@ -38,12 +38,10 @@ public class TwitchChatService
     {
         var message = e.ChatMessage.Message.ToLower();
 
-        // Verificar si el mensaje contiene el nombre de algún jugador
         foreach (var playerName in _playerNames)
         {
             if (message.Contains(playerName.ToLower()))
             {
-                // Incrementar el voto para el jugador correspondiente
                 _votes[playerName]++;
                 break;
             }
@@ -55,12 +53,10 @@ public class TwitchChatService
     {
         try
         {
-            // Leer el archivo JSON de la sala
             var filePath = Path.Combine("Data", "Rooms", $"{_roomCode}.json");
             var jsonRoomContent = await File.ReadAllTextAsync(filePath);
             var room = JsonSerializer.Deserialize<Room>(jsonRoomContent);
 
-            // Configurar los nombres de los jugadores y los contadores de votos
             _playerNames = room?.Players.Select(p => p.Name).ToList() ?? new List<string>();
             _votes = _playerNames.ToDictionary(name => name, name => 0);
 

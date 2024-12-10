@@ -23,7 +23,6 @@ namespace QuizClash_Arena_Multimedia.Pages
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;
 
-            // Ruta del archivo JSON de la sala
             string roomFilePath = Path.Combine("Data", "Rooms", $"{roomCode}.json");
 
             // Leer el archivo JSON y obtener los jugadores

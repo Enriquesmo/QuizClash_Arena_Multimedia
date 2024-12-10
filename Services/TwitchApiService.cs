@@ -40,25 +40,21 @@ public class TwitchApiService
         // Realizar la solicitud POST
         var response = await _httpClient.PostAsync(tokenUrl, content);
 
-        // Verificar si la solicitud fue exitosa
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Error al obtener el token de acceso: {response.StatusCode}");
         }
 
-        // Leer la respuesta JSON que contiene el access_token
         var responseContent = await response.Content.ReadAsStringAsync();
 
         // Deserializar la respuesta en un modelo fuerte
         var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<OAuthTokenResponse>(responseContent);
 
-        // Validar que el access_token no sea nulo
         if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.access_token))
         {
             throw new Exception("No se pudo obtener un token válido.");
         }
 
-        // Mostrar el token en consola (para pruebas)
         Console.WriteLine($"Access Token: {tokenResponse.access_token}");
 
         // Devolver el access_token como string
@@ -78,22 +74,18 @@ public class TwitchApiService
         // Enviar la solicitud
         var response = await _httpClient.SendAsync(request);
 
-        // Verificar si la solicitud fue exitosa
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Error al obtener el nombre de usuario: {response.StatusCode}");
         }
 
-        // Leer la respuesta JSON
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        // Deserializar la respuesta JSON para obtener el nombre de usuario
         var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
 
         // Extraer el nombre de usuario del JSON
         var userName = jsonResponse.GetProperty("data")[0].GetProperty("login").GetString();
 
-        // Devolver el nombre de usuario
         return userName;
     }
 
@@ -128,14 +120,12 @@ public class TwitchApiService
         // Enviar la solicitud POST
         var response = await _httpClient.PostAsync(pollUrl, content);
 
-        // Verificar el resultado de la solicitud
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();
             throw new Exception($"Error al crear la encuesta: {response.StatusCode} - {errorContent}");
         }
 
-        // Leer y devolver la respuesta como string
         var responseContent = await response.Content.ReadAsStringAsync();
         return responseContent;
     }
@@ -184,10 +174,8 @@ public class TwitchApiService
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         _httpClient.DefaultRequestHeaders.Add("Client-Id", clientId);
 
-        // Enviar la solicitud GET
         var response = await _httpClient.GetAsync(url);
 
-        // Verificar si la solicitud fue exitosa
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();

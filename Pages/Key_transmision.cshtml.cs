@@ -15,8 +15,7 @@ namespace QuizClash_Arena_Multimedia.Pages
         }
         public string ProcessStreamKey(string streamKey, string broadcasterId)
         {
-            // Aquí puedes implementar lógica adicional, como guardar el streamKey en un log,
-            // mostrarlo en algún formato específico, etc.
+            
             return $"Broadcaster ID: {broadcasterId}, Stream Key: {streamKey}";
         }
         public string? StreamKey { get; private set; }

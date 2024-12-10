@@ -58,7 +58,6 @@ namespace QuizClash_Arena_Multimedia.Services
             {
                 var voto = e.ChatMessage.Message.Split(' ')[1];
                 _logger.LogInformation($"Voto recibido: {voto} por parte de {e.ChatMessage.Username}");
-                // Aquí deberías agregar lógica para contar los votos y actualizarlos en el juego.
             }
         }
     }

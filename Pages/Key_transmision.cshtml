@@ -44,7 +44,7 @@
 
     .images-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+        grid-template-columns: repeat(2, 1fr); 
         gap: 20px;
         justify-items: center;
         align-items: center;
@@ -100,10 +100,8 @@
     document.getElementById("playGameButtonConTwitch").addEventListener("click", function () {
 
 
-        // Construir la URL con los parámetros
         const url = `/Create_game?Twitch=True`;
 
-        // Redirigir a la URL construida
         window.location.href = url;
     });
 </script>
@@ -130,9 +128,9 @@
     }
 
         .play-button:hover {
-            background-color: #ff3366; /* Rosa */
-            transform: scale(1.05); /* Ligero zoom */
-            color: white; /* Aseguramos que el texto siga blanco */
+            background-color: #ff3366; 
+            transform: scale(1.05); 
+            color: white; 
         }
 </style>
 

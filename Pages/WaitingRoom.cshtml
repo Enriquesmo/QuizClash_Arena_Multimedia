@@ -93,7 +93,7 @@
         }
 
     .start-game-button:disabled {
-        background-color: #ffb366; /* Naranja apagado */
+        background-color: #ffb366; 
         cursor: not-allowed;
         transform: none;
     }
@@ -163,7 +163,6 @@
     connection.on("PlayerJoined", function (playerName, playerAvatar) {
         addPlayerToList(playerName, playerAvatar);
 
-        // Actualizar el contador de jugadores
         document.getElementById("playerCount").innerText = `${document.getElementById("playerList").children.length} / ${maxPlayers}`;
     });
 
@@ -191,7 +190,7 @@
     function updatePlayerList() {
         return connection.invoke("GetPlayersInRoom", roomCode).then(players => {
             const playerList = document.getElementById("playerList");
-            playerList.innerHTML = ""; // Limpiar la lista actual
+            playerList.innerHTML = ""; 
             if (players) {
                 players.forEach(player => {
                     addPlayerToList(player.name, player.avatar);
@@ -222,7 +221,6 @@
         });
     }
 
-    // Recargar la lista de jugadores cada 5 segundos
     setInterval(updatePlayerList, 1000);
 
     // Comprobar si el juego ha comenzado cada 5 segundos

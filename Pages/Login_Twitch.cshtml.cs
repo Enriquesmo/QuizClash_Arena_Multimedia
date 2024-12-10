@@ -7,7 +7,7 @@ namespace QuizClash_Arena_Multimedia.Pages
 {
     public class Login_TwitchModel : PageModel
     {
-        // Propiedad pública para almacenar el ganador
+        // almacenar el ganador
         public string? auth { get; set; }
 
        

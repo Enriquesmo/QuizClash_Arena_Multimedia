@@ -16,7 +16,6 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string MemePath4 { get; private set; }
         public string MemePath5 { get; private set; }
         public string CreatorName { get; private set; }
-        //[BindProperty]
         public string UserText { get; set; }
         public string RoomCode { get; set; }
         public string PlayerName { get; set; }

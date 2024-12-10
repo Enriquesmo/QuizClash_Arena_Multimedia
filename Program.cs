@@ -159,7 +159,6 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
     {
         context.Response.Cookies.Delete("access_token");
         context.Response.Cookies.Delete("brodcasterId");
-        //return Results.Redirect("/Login_Twitch");
     }
     // Si no, procedemos con la autenticación
     var authenticateResult = await context.AuthenticateAsync("Twitch");
@@ -198,14 +197,12 @@ app.MapGet("/prueba", async (HttpContext context, IHttpClientFactory clientFacto
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.Lax,
-        //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
     context.Response.Cookies.Append("brodcasterId", broadcasterId, new CookieOptions
     {
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.Lax,
-        //Expires = DateTimeOffset.UtcNow.AddDays(30)
     });
 
     return Results.Redirect($"/Login_Twitch?auth={auth}&Twitch=True");
@@ -268,7 +265,6 @@ app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory cl
         
         var ganador= await chatService.StartVotingAsync();
         return Results.Redirect($"/winning_result?resultWin={ganador}");
-        //return Results.Ok(new { message = "Poll started", winner = ganador });
     }
     catch (Exception ex)
     {
@@ -276,7 +272,6 @@ app.MapGet("/start-chat-poll", async (HttpContext context, IHttpClientFactory cl
         return Results.BadRequest($"Error al conectar con el chat: {ex.Message}");
     }
 });
-// Ejecutar la aplicación
 app.Run();
 
 public class UserInfoResponse
