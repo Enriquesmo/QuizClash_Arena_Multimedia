@@ -17,7 +17,8 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string PlayerAvatar { get; set; }
         [BindProperty]
         public string WebSocketId { get; set; }
-
+        public Room CurrentRoom { get; set; }
+        
         /**
          * Maneja la solicitud POST para unirse a un juego.
          * Valida el estado del modelo y redirige a la sala de espera con los datos necesarios.
@@ -43,7 +44,13 @@ namespace QuizClash_Arena_Multimedia.Pages
             using (JsonDocument document = JsonDocument.Parse(roomJson))
             {
                 JsonElement root = document.RootElement;
-
+                int numPlayers = root.GetProperty("NumPlayers").GetInt32();
+                var playersJSON = root.GetProperty("Players");
+                if (playersJSON.GetArrayLength() >= numPlayers)
+                {
+                    ModelState.AddModelError(string.Empty, "La sala ya está llena.");
+                    return Page();
+                }
                 // Crear el nuevo jugador como un JsonObject
                 var newPlayer = new JsonObject
                 {
@@ -65,7 +72,9 @@ namespace QuizClash_Arena_Multimedia.Pages
             }
 
             // Redirigir a la sala de espera con los datos del nuevo jugador
+
             return RedirectToPage("WaitingRoom", new { roomCode = RoomCode, playerName = PlayerName, playerAvatar = PlayerAvatar });
         }
+
     }
 }

@@ -1,0 +1,31 @@
+{
+  "RoomCode": "611958",
+  "NumPlayers": 2,
+  "CreatedBy": {
+    "Name": "H",
+    "Avatar": "/images/avatars/avatar_1.png",
+    "WebSocketId": "vmC7fNKjc8QQqZFhdV_cRg",
+    "votos": 0
+  },
+  "Players": [
+    {
+      "Name": "H",
+      "Avatar": "/images/avatars/avatar_1.png",
+      "WebSocketId": "vmC7fNKjc8QQqZFhdV_cRg",
+      "votos": 0
+    },
+    {
+      "Name": "SWEW",
+      "Avatar": "/images/avatars/avatar_4.png",
+      "WebSocketId": "F8g9eKQ1yB9ZfuX8aQvNVw"
+    }
+  ],
+  "CreatedAt": "2024-12-10T18:10:33.4957242\u002B01:00",
+  "Rounds": [],
+  "GameStarted": false,
+  "CurrentRound": 0,
+  "GameEnded": false,
+  "Voting": false,
+  "FinishVoting": false,
+  "ganador": ""
+}

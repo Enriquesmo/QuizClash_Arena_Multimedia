@@ -1,0 +1,51 @@
+{
+  "RoomCode": "101109",
+  "NumPlayers": 6,
+  "CreatedBy": {
+    "Name": "A",
+    "Avatar": "/images/avatars/avatar_1.png",
+    "WebSocketId": "VK_UmYAxkD2LwcwJfRCrMg",
+    "votos": 0
+  },
+  "Players": [
+    {
+      "Name": "A",
+      "Avatar": "/images/avatars/avatar_1.png",
+      "WebSocketId": "VK_UmYAxkD2LwcwJfRCrMg",
+      "votos": 0
+    },
+    {
+      "Name": "Q",
+      "Avatar": "/images/avatars/avatar_1.png",
+      "WebSocketId": "QFmxQ12rAzHI7dDu_zaUuw"
+    },
+    {
+      "Name": "W",
+      "Avatar": "/images/avatars/avatar_2.png",
+      "WebSocketId": "Q62opBtx-5Pek20QxXkzXw"
+    },
+    {
+      "Name": "E",
+      "Avatar": "/images/avatars/avatar_6.png",
+      "WebSocketId": "eKDZc_JqHV_JaXvvyFUwXQ"
+    },
+    {
+      "Name": "Y",
+      "Avatar": "/images/avatars/avatar_8.png",
+      "WebSocketId": "zoPsPXt_SfSQa8_bhS72dA"
+    },
+    {
+      "Name": "X",
+      "Avatar": "/images/avatars/avatar_4.png",
+      "WebSocketId": "de0sx8d3V-mHw5mjmsKuQw"
+    }
+  ],
+  "CreatedAt": "2024-12-10T18:12:21.8126038\u002B01:00",
+  "Rounds": [],
+  "GameStarted": false,
+  "CurrentRound": 0,
+  "GameEnded": false,
+  "Voting": false,
+  "FinishVoting": false,
+  "ganador": ""
+}
