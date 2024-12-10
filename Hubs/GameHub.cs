@@ -30,10 +30,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
         // ====================================================================
         public GameHub()
         {
-            if (twitchClient == null)
-            {
-                InitializeTwitchClient();
-            }
+
         }
         public string GetConnectionId()
         {
@@ -46,15 +43,7 @@ namespace QuizClash_Arena_Multimedia.Hubs
         /**
          * Inicializa el cliente de Twitch con las credenciales y configura el evento de recepción de mensajes.
          */
-        private void InitializeTwitchClient()
-        {
-            var credentials = new ConnectionCredentials("twitch_username", "access_token");
-            twitchClient = new TwitchClient();
-            twitchClient.Initialize(credentials, "channel_name");
 
-            twitchClient.OnMessageReceived += TwitchClient_OnMessageReceived;
-            twitchClient.Connect();
-        }
 
         // ====================================================================
         // Métodos de manejo de mensajes de Twitch
