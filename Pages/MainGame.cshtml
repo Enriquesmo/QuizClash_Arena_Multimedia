@@ -217,6 +217,7 @@
     ];
 
     // Inicia la conexión
+
     connection.start().catch(err => console.error("Error de conexión: ", err));
 
     // Función para enviar datos al GameHub
@@ -272,6 +273,6 @@
     }
     // Comprobar si el juego ha comenzado cada 5 segundos
     if (playerName !== creatorName) {
-        setInterval(checkGameStarted, 3000);
+        setInterval(checkGameStarted, 1000);
     }
 </script>

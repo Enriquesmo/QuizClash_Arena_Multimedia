@@ -136,7 +136,11 @@
         }
         @if (Model.Twitch?.Equals("False", StringComparison.OrdinalIgnoreCase) == true)
         {
-        <button id="enableVotingButton" class="btn btn-primary">Habilitar votaciones locales</button>
+            <form method="get" id="irAnuevaPagina" asp-page="CheckResults" onsubmit="VotingGame(event)" style="display: block;">
+                <button id="enableVotingButton" type="submit" class="start-game-button">
+                    Habilitar votaciones locales
+                </button>
+            </form>
         }
     </div>
 
@@ -145,10 +149,12 @@
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 
     <script>
-        const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
-            connection.start().catch(err => console.error("Error de conexión: ", err));
-
-                document.getElementById("playGameButton").addEventListener("click", function () {
+    const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+    connection.start().catch(err => console.error("Error de conexión: ", err));
+        document.addEventListener("DOMContentLoaded", function () {
+            const playGameButton = document.getElementById("playGameButton");
+            if (playGameButton) {
+                playGameButton.addEventListener("click", function () {
                     const roomCode = '@Model.RoomCode';
                     const playerName = '@Model.PlayerName';
                     const playerAvatar = '@Model.PlayerAvatar';
@@ -159,23 +165,81 @@
                     // Redirigir a la URL construida
                     window.location.href = url;
                 });
+            }
 
-                document.getElementById("enableVotingButton").addEventListener("click", function () {
+            const enableVotingButton = document.getElementById("enableVotingButton");
+            if (enableVotingButton) {
+                enableVotingButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    console.log("Botón de habilitar votaciones locales clicado");
+                    enableVotingButton.style.display = 'none'; 
                     const voteButtons = document.querySelectorAll('.vote-button');
-                    voteButtons.forEach(button => button.style.display = 'inline-block');
-                });
-
-                function vote(button, playerName, response, roundNumber) {
-                    const roundContainer = button.closest('.round-container');
-                    const voteButtons = roundContainer.querySelectorAll('.vote-button');
-                    voteButtons.forEach(btn => btn.style.display = 'none');
-
-                    const roomCode = '@Model.RoomCode';
-                    connection.invoke("VotarRespuesta", roomCode, roundNumber, playerName, response).then(() => {
-                        console.log(`Response: ${playerName} - ${response}, Round: ${roundNumber}, Room Code: ${roomCode}`);
-                    }).catch(function (err) {
-                        console.error(err.toString());
+                    voteButtons.forEach(button => {
+                        button.style.display = 'inline-block';
+                        console.log("Botón de votación mostrado");
                     });
-                }
+                    VotingGame(event);
+                });
+            }
+
+            const form = document.getElementById("irAnuevaPagina");
+            if (form) {
+                form.addEventListener("submit", VotingGame);
+            }
+        });
+
+        function vote(button, playerName, response, roundNumber) {
+            const roundContainer = button.closest('.round-container');
+            const voteButtons = roundContainer.querySelectorAll('.vote-button');
+            voteButtons.forEach(btn => btn.style.display = 'none');
+
+            const roomCode = '@Model.RoomCode';
+            connection.invoke("VotarRespuesta", roomCode, roundNumber, playerName, response).then(() => {
+                console.log(`Response: ${playerName} - ${response}, Round: ${roundNumber}, Room Code: ${roomCode}`);
+            }).catch(function (err) {
+                console.error(err.toString());
+            });
+        }
+
+        function VotingGame(event) {
+            event.preventDefault();
+            const roomCode = '@Model.RoomCode';
+            connection.invoke("VotingGame", roomCode).then(() => {
+                console.log("Juego de votación iniciado");
+            }).catch(function (err) {
+                console.error(err.toString());
+            });
+        }
+        let already = false;
+        function checkGameVoting() {
+            if (already) {
+                return;
+            }else{
+                const roomCode = '@Model.RoomCode';
+                connection.invoke("IsVotingGame", roomCode).then(isStarted => {
+                    if (isStarted) {
+                        already = true;
+                        const voteButtons = document.querySelectorAll('.vote-button');
+                        voteButtons.forEach(button => {
+                            button.style.display = 'inline-block';
+                            console.log("Botón de votación mostrado");
+                        });
+                    }
+                }).catch(function (err) {
+                    console.error(err.toString());
+                });
+            }
+        }
+
+
+        // Comprobar si el juego ha comenzado cada 5 segundos
+        const playerName = '@Model.PlayerName';
+        const creatorName = '@Model.CreatorName';
+        if (playerName !== creatorName) {
+            setInterval(checkGameVoting, 1000);
+        }
     </script>
+
+
+
 }

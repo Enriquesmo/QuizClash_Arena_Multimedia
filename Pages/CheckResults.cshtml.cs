@@ -15,6 +15,7 @@ namespace QuizClash_Arena_Multimedia.Pages
         public string PlayerAvatar { get; set; }
         public Room CurrentRoom { get; set; }
         public string Twitch { get; set; }
+        public string CreatorName { get; private set; }
         public void OnGet(string roomCode, string playerName, string playerAvatar)
         {
             Twitch = Request.Query["twitch"];
@@ -22,7 +23,7 @@ namespace QuizClash_Arena_Multimedia.Pages
             PlayerName = playerName;
             PlayerAvatar = playerAvatar;
             CurrentRoom = LoadRoomFromJson(roomCode);
-            
+            CreatorName = CurrentRoom.CreatedBy.Name;
         }
 
         private Room LoadRoomFromJson(string roomCode)
